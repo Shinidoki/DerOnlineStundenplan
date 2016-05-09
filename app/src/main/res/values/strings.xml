@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Der-Onlinestundenplan.de App</string>
+    <string-array name="schools">
+        <item>Richard</item>
+        <item>Helene</item>
+        <item>Ludwig</item>
+    </string-array>
+</resources>
