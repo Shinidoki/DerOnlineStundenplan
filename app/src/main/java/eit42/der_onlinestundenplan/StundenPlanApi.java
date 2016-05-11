@@ -1,6 +1,10 @@
 package eit42.der_onlinestundenplan;
 
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -14,11 +18,20 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import eit42.der_onlinestundenplan.data.DBHelper;
+import eit42.der_onlinestundenplan.data.SchoolContract;
+
 public class StundenPlanApi {
     private static final String url = "http://beta.der-onlinestundenplan.de/api/v1/school";
 
     private JSONArray schools = null;
     private JSONObject classes = null;
+    private Context context;
+
+    public StundenPlanApi(Context context)
+    {
+        this.context = context;
+    }
 
     /**
      * Gets all schools from the api if not already fetched
@@ -42,7 +55,31 @@ public class StundenPlanApi {
             return null;
         }
         schools = result;
+        saveSchools(result);
         return result;
+    }
+
+    private void saveSchools(JSONArray schools)
+    {
+        int len = schools.length();
+        DBHelper dbHelper = new DBHelper(context,SchoolContract.SQL_CREATE_ENTRIES,SchoolContract.SQL_DELETE_ENTRIES);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        for (int i = 0; i < len; i++) {
+            try {
+                JSONObject school = schools.getJSONObject(i);
+                ContentValues values = new ContentValues();
+                values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME, school.getString("name"));
+                values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_CITY, school.getString("city"));
+                values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_WEBSITE, school.getString("website"));
+                db.insert(
+                        SchoolContract.SchoolEntry.TABLE_NAME,
+                        null,
+                        values
+                );
+            } catch(Exception e){
+                System.out.println("Fehler beim speichern der Schule in der Datenbank: "+e.getMessage());
+            }
+        }
     }
 
     /**
@@ -51,19 +88,45 @@ public class StundenPlanApi {
      */
     public String[] getSchoolsArray()
     {
-        JSONArray schoolArray = getSchools();
-        int len = schoolArray.length();
-        String[] result = new String[len];
+        DBHelper dbHelper = new DBHelper(context,SchoolContract.SQL_CREATE_ENTRIES,SchoolContract.SQL_DELETE_ENTRIES);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-        for (int i = 0; i < len; i++) {
-            try {
-                result[i] = schoolArray.getJSONObject(i).getString("name");
-            } catch(Exception e){
-                System.out.println("Fehler beim konvertieren der Schulen ins Array format: "+e.getMessage());
+        String[] projection = {
+                SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME
+        };
+
+        String sortOrder = SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME + " ASC";
+
+        Cursor c = db.query(
+                SchoolContract.SchoolEntry.TABLE_NAME,
+                projection,
+                null,null,null,null,
+                sortOrder
+        );
+
+        int count = c.getCount();
+
+        if(count == 0){
+            JSONArray schoolArray = getSchools();
+            int len = schoolArray.length();
+            String[] result = new String[len];
+
+            for (int i = 0; i < len; i++) {
+                try {
+                    result[i] = schoolArray.getJSONObject(i).getString("name");
+                } catch(Exception e){
+                    System.out.println("Fehler beim konvertieren der Schulen ins Array format: "+e.getMessage());
+                }
             }
+            return result;
+        } else {
+            c.moveToFirst();
+            String[] result = new String[count];
+            for (int i = 0; i < count; i++) {
+                result[i] = c.getString(c.getColumnIndex(SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME));
+            }
+            return result;
         }
-
-        return result;
     }
 
     /**

@@ -75,7 +75,7 @@ public class MainActivity extends Activity {
     private class SchoolsAsyncTask extends AsyncTask<String, Void, String[]> {
         @Override
         protected String[] doInBackground(String... param) {
-            StundenPlanApi api = new StundenPlanApi();
+            StundenPlanApi api = new StundenPlanApi(getApplicationContext());
             return api.getSchoolsArray();
         }
         // onPostExecute displays the results of the AsyncTask.
@@ -100,7 +100,7 @@ public class MainActivity extends Activity {
     private class ClassesAsyncTask extends AsyncTask<String, Void, String[]> {
         @Override
         protected String[] doInBackground(String... school) {
-            StundenPlanApi api = new StundenPlanApi();
+            StundenPlanApi api = new StundenPlanApi(getApplicationContext());
             return api.getClassesArray(school[0]);
         }
         // onPostExecute displays the results of the AsyncTask.
