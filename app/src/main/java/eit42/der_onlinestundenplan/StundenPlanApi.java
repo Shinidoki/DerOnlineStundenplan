@@ -45,6 +45,10 @@ public class StundenPlanApi {
         return result;
     }
 
+    /**
+     * Get all Schools as an String array
+     * @return String array of all schools
+     */
     public String[] getSchoolsArray()
     {
         JSONArray schoolArray = getSchools();
@@ -90,6 +94,9 @@ public class StundenPlanApi {
      */
     public JSONArray getClasses(String school)
     {
+        if(classes == null){
+            classes = new JSONObject();
+        }
         if(classes.has(school)){
             try{
                 return classes.getJSONArray(school);
@@ -116,6 +123,28 @@ public class StundenPlanApi {
 
         return arrayResult;
     }
+
+    /**
+     * Get all classes as a String array
+     * @return String array of all classes
+     */
+    public String[] getClassesArray(String school)
+    {
+        JSONArray classesArray = getClasses(school);
+        int len = classesArray.length();
+        String[] result = new String[len];
+
+        for (int i = 0; i < len; i++) {
+            try {
+                result[i] = classesArray.getString(i);
+            } catch(Exception e){
+                System.out.println("Fehler beim konvertieren der Klassen ins Array format: "+e.getMessage());
+            }
+        }
+
+        return result;
+    }
+
 
     /**
      * Get more information about a class

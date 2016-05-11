@@ -21,6 +21,12 @@
         android:id="@+id/schools"
         android:spinnerMode="dialog" />
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/classes"
+        android:spinnerMode="dialog" />
+
     <EditText
         android:id="@+id/etResponse"
         android:layout_width="match_parent"
