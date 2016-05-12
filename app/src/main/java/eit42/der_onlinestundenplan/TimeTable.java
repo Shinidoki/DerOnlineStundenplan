@@ -40,6 +40,7 @@ public class TimeTable extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private ListView timeTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,16 @@ public class TimeTable extends AppCompatActivity {
         toolbar.setLogo(R.drawable.logo);
 
         Intent intent = getIntent();
+
+
+
+        timeTable =  (ListView) findViewById(R.id.timeTable);
+
+        String[] testData =  new String[]{"Test1","Test2"};
+        TimeTableAdapter adapter = new TimeTableAdapter(this,testData);
+
+        timeTable.setAdapter(adapter);
+
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.

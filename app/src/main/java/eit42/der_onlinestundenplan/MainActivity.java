@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,7 +34,7 @@ import android.app.Activity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     EditText etResponse;
     TextView tvIsConnected;
@@ -41,7 +42,6 @@ public class MainActivity extends Activity {
     Spinner classes;
     Button testButton;
     private Toolbar toolbar;
-    TimeTable timeTableActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
