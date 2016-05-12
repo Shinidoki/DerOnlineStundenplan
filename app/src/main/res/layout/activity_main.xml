@@ -27,6 +27,15 @@
         android:id="@+id/classes"
         android:spinnerMode="dialog" />
 
+    <TableLayout android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/tableLayout"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:padding="5dp">
+    </TableLayout>
+
     <EditText
         android:id="@+id/etResponse"
         android:layout_width="match_parent"

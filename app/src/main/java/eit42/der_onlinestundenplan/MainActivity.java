@@ -1,35 +1,30 @@
 package eit42.der_onlinestundenplan;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import android.app.Activity;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.Activity;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class MainActivity extends Activity {
 
     EditText etResponse;
-    TextView tvIsConnected;
+    TextView tvIsConnected, header1, header2, header3;
     Spinner schools;
     Spinner classes;
+    TableLayout table;
+    TableRow rowHeader, row1, row2, row3;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +35,23 @@ public class MainActivity extends Activity {
         tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
         schools = (Spinner) findViewById(R.id.schools);
         classes = (Spinner) findViewById(R.id.classes);
+
+        table = (TableLayout)findViewById(R.id.tableLayout);
+
+        header1 = new TextView(this);
+        header1.setText("Header1");
+        header2 = new TextView(this);
+        header2.setText("Header2");
+        header3 = new TextView(this);
+        header3.setText("Header3");
+
+        rowHeader = new TableRow(this);
+
+        rowHeader.addView(header1);
+        rowHeader.addView(header2);
+        rowHeader.addView(header3);
+
+        table.addView(rowHeader);
 
         schools.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

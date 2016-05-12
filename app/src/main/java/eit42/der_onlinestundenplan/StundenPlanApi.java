@@ -1,6 +1,5 @@
 package eit42.der_onlinestundenplan;
 
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -28,8 +27,7 @@ public class StundenPlanApi {
     private JSONObject classes = null;
     private Context context;
 
-    public StundenPlanApi(Context context)
-    {
+    public StundenPlanApi(Context context) {
         this.context = context;
     }
 
@@ -38,20 +36,19 @@ public class StundenPlanApi {
      *
      * @return JSONArray of all Schools
      */
-    public JSONArray getSchools()
-    {
-        if(schools != null){
+    public JSONArray getSchools() {
+        if (schools != null) {
             return schools;
         }
 
         String apiResult = apiCall("");
 
-        JSONArray result = null;
+        JSONArray result;
         try {
             JSONObject json = new JSONObject(apiResult);
             result = json.getJSONArray("schools");
-        } catch(Exception e){
-            System.out.println("Json error: "+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Json error: " + e.getMessage());
             return null;
         }
         schools = result;
@@ -59,10 +56,14 @@ public class StundenPlanApi {
         return result;
     }
 
-    private void saveSchools(JSONArray schools)
-    {
+    /**
+     * Save the schools in the database
+     *
+     * @param schools which schould be saved
+     */
+    private void saveSchools(JSONArray schools) {
         int len = schools.length();
-        DBHelper dbHelper = new DBHelper(context,SchoolContract.SQL_CREATE_ENTRIES,SchoolContract.SQL_DELETE_ENTRIES);
+        DBHelper dbHelper = new DBHelper(context, SchoolContract.SQL_CREATE_ENTRIES, SchoolContract.SQL_DELETE_ENTRIES);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         for (int i = 0; i < len; i++) {
             try {
@@ -76,19 +77,19 @@ public class StundenPlanApi {
                         null,
                         values
                 );
-            } catch(Exception e){
-                System.out.println("Fehler beim speichern der Schule in der Datenbank: "+e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
             }
         }
     }
 
     /**
      * Get all Schools as an String array
+     *
      * @return String array of all schools
      */
-    public String[] getSchoolsArray()
-    {
-        DBHelper dbHelper = new DBHelper(context,SchoolContract.SQL_CREATE_ENTRIES,SchoolContract.SQL_DELETE_ENTRIES);
+    public String[] getSchoolsArray() {
+        DBHelper dbHelper = new DBHelper(context, SchoolContract.SQL_CREATE_ENTRIES, SchoolContract.SQL_DELETE_ENTRIES);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -100,13 +101,13 @@ public class StundenPlanApi {
         Cursor c = db.query(
                 SchoolContract.SchoolEntry.TABLE_NAME,
                 projection,
-                null,null,null,null,
+                null, null, null, null,
                 sortOrder
         );
 
         int count = c.getCount();
 
-        if(count == 0){
+        if (count == 0) {
             c.close();
             JSONArray schoolArray = getSchools();
             int len = schoolArray.length();
@@ -115,8 +116,8 @@ public class StundenPlanApi {
             for (int i = 0; i < len; i++) {
                 try {
                     result[i] = schoolArray.getJSONObject(i).getString("name");
-                } catch(Exception e){
-                    System.out.println("Fehler beim konvertieren der Schulen ins Array format: "+e.getMessage());
+                } catch (Exception e) {
+                    System.out.println("Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
                 }
             }
             return result;
@@ -137,15 +138,14 @@ public class StundenPlanApi {
      * @param school The school name
      * @return Information about the school (name, city, website)
      */
-    public JSONObject getSchoolInfo(String school)
-    {
+    public JSONObject getSchoolInfo(String school) {
         String apiResult = apiCall("/" + school);
 
-        JSONObject result = null;
+        JSONObject result;
         try {
             result = new JSONObject(apiResult);
-        } catch(Exception e){
-            System.out.println("Json error: "+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Json error: " + e.getMessage());
             return null;
         }
         return result;
@@ -157,23 +157,22 @@ public class StundenPlanApi {
      * @param school The school name
      * @return All available classes of a school
      */
-    public JSONArray getClasses(String school)
-    {
-        if(classes == null){
+    public JSONArray getClasses(String school) {
+        if (classes == null) {
             classes = new JSONObject();
         }
-        if(classes.has(school)){
-            try{
+        if (classes.has(school)) {
+            try {
                 return classes.getJSONArray(school);
-            } catch(Exception e){
-                System.out.println("Fehler beim holen der Klassen: "+e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Fehler beim holen der Klassen: " + e.getMessage());
             }
         }
 
-        String apiResult = apiCall("/" + school+"/class");
+        String apiResult = apiCall("/" + school + "/class");
 
-        JSONObject result = null;
-        JSONArray arrayResult = null;
+        JSONObject result;
+        JSONArray arrayResult;
         try {
             result = new JSONObject(apiResult);
 
@@ -181,8 +180,8 @@ public class StundenPlanApi {
 
             classes.put(school, arrayResult);
 
-        } catch(Exception e){
-            System.out.println("Json error: "+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Json error: " + e.getMessage());
             return null;
         }
 
@@ -191,10 +190,10 @@ public class StundenPlanApi {
 
     /**
      * Get all classes as a String array
+     *
      * @return String array of all classes
      */
-    public String[] getClassesArray(String school)
-    {
+    public String[] getClassesArray(String school) {
         JSONArray classesArray = getClasses(school);
         int len = classesArray.length();
         String[] result = new String[len];
@@ -202,8 +201,8 @@ public class StundenPlanApi {
         for (int i = 0; i < len; i++) {
             try {
                 result[i] = classesArray.getString(i);
-            } catch(Exception e){
-                System.out.println("Fehler beim konvertieren der Klassen ins Array format: "+e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Fehler beim konvertieren der Klassen ins Array format: " + e.getMessage());
             }
         }
 
@@ -218,39 +217,38 @@ public class StundenPlanApi {
      * @param sClass The class name
      * @return Information about the class (currentWeek, Timetable, lastUpdated)
      */
-    public JSONObject getClassInfo(String school, String sClass)
-    {
+    public JSONObject getClassInfo(String school, String sClass) {
         return classApiCall("/" + school + "/class/" + sClass);
     }
 
     /**
      * Get the information and timetable on a specific week
+     *
      * @param school The name of the school
      * @param sClass The class name
-     * @param week Relative weeknumber (-1,0,1...)
+     * @param week   Relative weeknumber (-1,0,1...)
      * @return Timetable for the class in the specified week
      */
-    public JSONObject getClassInfo(String school, String sClass, int week)
-    {
+    public JSONObject getClassInfo(String school, String sClass, int week) {
         return classApiCall("/" + school + "/class/" + sClass + "/" + week);
     }
 
     /**
      * Get all weeks that are available for the class
+     *
      * @param school The name of the class
      * @param sClass The class name
      * @return An array with all available weeknumbers
      */
-    public JSONArray getAvailableWeeks(String school, String sClass)
-    {
+    public JSONArray getAvailableWeeks(String school, String sClass) {
         String apiResult = apiCall("/" + school + "/class/" + sClass + "/listWeeks");
 
         JSONArray result = null;
         try {
             JSONObject json = new JSONObject(apiResult);
             result = json.getJSONArray("schools");
-        } catch(Exception e){
-            System.out.println("Json error: "+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Json error: " + e.getMessage());
             return null;
         }
         schools = result;
@@ -259,17 +257,17 @@ public class StundenPlanApi {
 
     /**
      * Call for the class data
+     *
      * @param apiUrl Url for the api
      * @return The requested class data
      */
-    private JSONObject classApiCall(String apiUrl)
-    {
+    private JSONObject classApiCall(String apiUrl) {
         String apiResult = apiCall(apiUrl);
-        JSONObject result = null;
+        JSONObject result;
         try {
             result = new JSONObject(apiResult);
-        } catch(Exception e){
-            System.out.println("Json error: "+e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Json error: " + e.getMessage());
             return null;
         }
         return result;
@@ -277,31 +275,26 @@ public class StundenPlanApi {
 
     /**
      * Performs the actual call to the api
+     *
      * @param type defines which api data should be called
      * @return The string returned from the api
      */
-    private String apiCall(String type)
-    {
-        InputStream inputStream = null;
+    private String apiCall(String type) {
+        InputStream inputStream;
         String result = "";
         try {
-
             // create Http Connection
-            URL urlObj = new URL(url+type);
+            URL urlObj = new URL(url + type);
             HttpURLConnection urlConnection = (HttpURLConnection) urlObj.openConnection();
             try {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
 
                 // convert inputstream to string
-                if(inputStream != null)
-                    result = convertInputStreamToString(inputStream);
-                else
-                    result = "Did not work!";
+                result = convertInputStreamToString(inputStream);
             } finally {
                 //Always close the connection
                 urlConnection.disconnect();
             }
-
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
         }
@@ -316,12 +309,11 @@ public class StundenPlanApi {
      * @return A string returned from the api
      * @throws IOException
      */
-    private String convertInputStreamToString(InputStream inputStream) throws IOException
-    {
-        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-        String line = "";
+    private String convertInputStreamToString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
         String result = "";
-        while((line = bufferedReader.readLine()) != null)
+        while ((line = bufferedReader.readLine()) != null)
             result += line;
 
         inputStream.close();
