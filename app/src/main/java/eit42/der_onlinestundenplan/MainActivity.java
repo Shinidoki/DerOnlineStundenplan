@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,11 +33,12 @@ import android.app.Activity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     EditText etResponse;
     TextView tvIsConnected;
     Spinner schools;
+    Spinner classes;
     Button testButton;
     private Toolbar toolbar;
     TimeTable timeTableActivity;
@@ -67,6 +70,20 @@ public class MainActivity extends AppCompatActivity {
         etResponse = (EditText) findViewById(R.id.etResponse);
         tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
         schools = (Spinner) findViewById(R.id.schools);
+        classes = (Spinner) findViewById(R.id.classes);
+
+        schools.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                String school = String.valueOf(schools.getSelectedItem());
+                new ClassesAsyncTask().execute(school);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {}
+
+        });
+
+
         // check if you are connected or not
         if(isConnected()){
             tvIsConnected.setBackgroundColor(0xFF00CC00);
@@ -77,21 +94,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // call AsynTask to perform network operation on separate thread
-        new HttpAsyncTask().execute("http://beta.der-onlinestundenplan.de/api/v1/school");
+        new SchoolsAsyncTask().execute();
     }
 
     public boolean isConnected(){
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected())
-            return true;
-        else
-            return false;
+        return (networkInfo != null && networkInfo.isConnected());
     }
-    private class HttpAsyncTask extends AsyncTask<String, Void, String[]> {
+
+    private class SchoolsAsyncTask extends AsyncTask<String, Void, String[]> {
         @Override
-        protected String[] doInBackground(String... urls) {
-            StundenPlanApi api = new StundenPlanApi();
+        protected String[] doInBackground(String... param) {
+            StundenPlanApi api = new StundenPlanApi(getApplicationContext());
             return api.getSchoolsArray();
         }
         // onPostExecute displays the results of the AsyncTask.
@@ -103,9 +118,37 @@ public class MainActivity extends AppCompatActivity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),
                         android.R.layout.simple_spinner_item, result);
                 schools.setAdapter(adapter);
+
+
             }catch(Exception e) {
                 etResponse.setText("Fehler beim holen der Daten");
             }
+
+        }
+    }
+
+
+    private class ClassesAsyncTask extends AsyncTask<String, Void, String[]> {
+        @Override
+        protected String[] doInBackground(String... school) {
+            StundenPlanApi api = new StundenPlanApi(getApplicationContext());
+            return api.getClassesArray(school[0]);
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String[] result) {
+            Toast.makeText(getBaseContext(), "Classes Received!", Toast.LENGTH_LONG).show();
+            try{
+//                etResponse.setText(result.toString(1));
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),
+                        android.R.layout.simple_spinner_item, result);
+                classes.setAdapter(adapter);
+
+
+            }catch(Exception e) {
+                etResponse.setText("Fehler beim holen der Daten");
+            }
+
         }
     }
 }
