@@ -7,12 +7,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -22,15 +31,37 @@ import android.app.Activity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     EditText etResponse;
     TextView tvIsConnected;
     Spinner schools;
+    Button testButton;
+    private Toolbar toolbar;
+    TimeTable timeTableActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        //Toolbar stuff
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
+
+        toolbar.setLogo(R.drawable.logo);
+        toolbar.inflateMenu(R.menu.menu_main);
+
+        //Switch to TimeTable Activity Button
+        testButton = (Button) findViewById(R.id.testButton);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TimeTable.class);
+                startActivity(intent);
+            }
+        });
 
         // get reference to the views
         etResponse = (EditText) findViewById(R.id.etResponse);
@@ -72,12 +103,9 @@ public class MainActivity extends Activity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),
                         android.R.layout.simple_spinner_item, result);
                 schools.setAdapter(adapter);
-
-
             }catch(Exception e) {
                 etResponse.setText("Fehler beim holen der Daten");
             }
-
         }
     }
 }
