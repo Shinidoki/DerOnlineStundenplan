@@ -89,7 +89,7 @@ public class StundenPlanApi {
     public String[] getSchoolsArray()
     {
         DBHelper dbHelper = new DBHelper(context,SchoolContract.SQL_CREATE_ENTRIES,SchoolContract.SQL_DELETE_ENTRIES);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] projection = {
                 SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME
@@ -107,6 +107,7 @@ public class StundenPlanApi {
         int count = c.getCount();
 
         if(count == 0){
+            c.close();
             JSONArray schoolArray = getSchools();
             int len = schoolArray.length();
             String[] result = new String[len];
@@ -125,6 +126,7 @@ public class StundenPlanApi {
             for (int i = 0; i < count; i++) {
                 result[i] = c.getString(c.getColumnIndex(SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME));
             }
+            c.close();
             return result;
         }
     }
@@ -137,7 +139,7 @@ public class StundenPlanApi {
      */
     public JSONObject getSchoolInfo(String school)
     {
-        String apiResult = apiCall(school);
+        String apiResult = apiCall("/" + school);
 
         JSONObject result = null;
         try {
@@ -168,7 +170,7 @@ public class StundenPlanApi {
             }
         }
 
-        String apiResult = apiCall(school+"/class");
+        String apiResult = apiCall("/" + school+"/class");
 
         JSONObject result = null;
         JSONArray arrayResult = null;
@@ -218,7 +220,7 @@ public class StundenPlanApi {
      */
     public JSONObject getClassInfo(String school, String sClass)
     {
-        return classApiCall(school + "/class/" + sClass);
+        return classApiCall("/" + school + "/class/" + sClass);
     }
 
     /**
@@ -230,7 +232,7 @@ public class StundenPlanApi {
      */
     public JSONObject getClassInfo(String school, String sClass, int week)
     {
-        return classApiCall(school + "/class/" + sClass + "/" + week);
+        return classApiCall("/" + school + "/class/" + sClass + "/" + week);
     }
 
     /**
@@ -241,7 +243,7 @@ public class StundenPlanApi {
      */
     public JSONArray getAvailableWeeks(String school, String sClass)
     {
-        String apiResult = apiCall(school + "/class/" + sClass + "/listWeeks");
+        String apiResult = apiCall("/" + school + "/class/" + sClass + "/listWeeks");
 
         JSONArray result = null;
         try {
@@ -285,20 +287,20 @@ public class StundenPlanApi {
         try {
 
             // create Http Connection
-            URL urlObj = new URL(url+"/"+type);
+            URL urlObj = new URL(url+type);
             HttpURLConnection urlConnection = (HttpURLConnection) urlObj.openConnection();
             try {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
+
+                // convert inputstream to string
+                if(inputStream != null)
+                    result = convertInputStreamToString(inputStream);
+                else
+                    result = "Did not work!";
             } finally {
                 //Always close the connection
                 urlConnection.disconnect();
             }
-
-            // convert inputstream to string
-            if(inputStream != null)
-                result = convertInputStreamToString(inputStream);
-            else
-                result = "Did not work!";
 
         } catch (Exception e) {
             Log.d("InputStream", e.getLocalizedMessage());
@@ -314,7 +316,8 @@ public class StundenPlanApi {
      * @return A string returned from the api
      * @throws IOException
      */
-    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+    private String convertInputStreamToString(InputStream inputStream) throws IOException
+    {
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
         String line = "";
         String result = "";
@@ -322,7 +325,8 @@ public class StundenPlanApi {
             result += line;
 
         inputStream.close();
-        return result;
 
+        return result;
     }
+
 }
