@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         testButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, TimeTable.class);
+                Intent intent = new Intent(MainActivity.this, TimeTableActivity.class);
                 startActivity(intent);
             }
         });

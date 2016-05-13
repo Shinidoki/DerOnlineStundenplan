@@ -1,65 +1,42 @@
 package eit42.der_onlinestundenplan;
 
-import android.app.Activity;
-import android.text.Layout;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by L.Schnitzmeier on 12.05.2016.
  */
-public class TimeTableAdapter extends BaseAdapter {
+public class TimeTableAdapter extends ArrayAdapter<TimeTableElement> {
 
-    private Activity context;
-    private String[] classInfo;
-    private static int counter;
-
-    public TimeTableAdapter(Activity pContext, String[] pClassInfo)
-    {
-        context = pContext;
-        classInfo = pClassInfo;
+    public TimeTableAdapter(Context context, TimeTableElement[] elements) {
+        super(context,R.layout.list_item_time_table ,elements);
     }
 
-    @Override
-    public int getCount() {
-        return classInfo.length;
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return classInfo[position];
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View row = convertView;
+        View itemView = convertView;
+        LayoutInflater inflater = LayoutInflater.from(getContext());
 
-        if(row == null)
+        if(itemView == null)
         {
-            row = LayoutInflater.from(context).inflate(R.layout.list_item_time_table,null,false);
+            itemView = inflater.inflate(R.layout.list_item_time_table,parent,false);
         }
 
-        TextView hour = (TextView) row.findViewById(R.id.hourTextView);
-        TextView subject = (TextView) row.findViewById(R.id.classTextView);
-        TextView rt = (TextView) row.findViewById(R.id.rtTextView);
+        TimeTableElement element = getItem(position);
 
-        hour.setText(counter+". Std.");
-        subject.setText(classInfo[position]);
-        rt.setText("__"+counter+"__"+counter*2);
+        TextView hourText = (TextView) itemView.findViewById(R.id.hourTextView);
+        TextView subjectText = (TextView) itemView.findViewById(R.id.classTextView);
+        TextView rtText = (TextView) itemView.findViewById(R.id.rtTextView);
 
-        counter++;
+        hourText.setText(element.getHour());
+        subjectText.setText(element.getSubject());
+        rtText.setText(element.getRoom() + " | " + element.getTeacher());
 
-        return row;
+        return itemView;
     }
 }
