@@ -10,19 +10,18 @@ public final class ClassContract {
     /* Inner class that defines the table contents */
     public static abstract class ClassEntry implements BaseColumns {
         public static final String TABLE_NAME = "classes";
-        public static final String COLUMN_NAME_S_NAME = "c_name";
-        public static final String COLUMN_NAME_S_CITY = "s_city";
-        public static final String COLUMN_NAME_S_WEBSITE = "s_website";
+        public static final String COLUMN_NAME_C_NAME = "c_name";
+        public static final String COLUMN_NAME_C_SCHOOL = "c_school";
     }
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
+    //TODO Mit foreign keys arbeiten
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + ClassEntry.TABLE_NAME + " (" +
                     ClassEntry._ID + " INTEGER PRIMARY KEY," +
-                    ClassEntry.COLUMN_NAME_S_NAME + TEXT_TYPE + COMMA_SEP +
-                    ClassEntry.COLUMN_NAME_S_CITY + TEXT_TYPE + COMMA_SEP +
-                    ClassEntry.COLUMN_NAME_S_WEBSITE + TEXT_TYPE +
+                    ClassEntry.COLUMN_NAME_C_NAME + TEXT_TYPE + COMMA_SEP +
+                    ClassEntry.COLUMN_NAME_C_SCHOOL + TEXT_TYPE +
                     " )";
 
     public static final String SQL_DELETE_ENTRIES =

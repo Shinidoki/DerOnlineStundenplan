@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -17,6 +18,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import eit42.der_onlinestundenplan.data.ClassContract;
 import eit42.der_onlinestundenplan.data.DBHelper;
 import eit42.der_onlinestundenplan.data.SchoolContract;
 
@@ -98,17 +100,31 @@ public class StundenPlanApi {
 
         String sortOrder = SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME + " ASC";
 
-        Cursor c = db.query(
-                SchoolContract.SchoolEntry.TABLE_NAME,
-                projection,
-                null, null, null, null,
-                sortOrder
-        );
+        int count;
+        Cursor c = null;
 
-        int count = c.getCount();
+        try {
+            c = db.query(
+                    SchoolContract.SchoolEntry.TABLE_NAME,
+                    projection,
+                    null, null, null, null,
+                    sortOrder
+            );
+
+            count = c.getCount();
+
+        } catch(SQLiteException e){
+            Log.d("SQL", "Fehler beim query der Schulen: " + e.getLocalizedMessage());
+            count = 0;
+            if(c != null){
+                c.close();
+            }
+        }
 
         if (count == 0) {
-            c.close();
+            if(c != null){
+                c.close();
+            }
             JSONArray schoolArray = getSchools();
             int len = schoolArray.length();
             String[] result = new String[len];
@@ -166,6 +182,7 @@ public class StundenPlanApi {
                 return classes.getJSONArray(school);
             } catch (Exception e) {
                 System.out.println("Fehler beim holen der Klassen: " + e.getMessage());
+                return null;
             }
         }
 
@@ -184,8 +201,35 @@ public class StundenPlanApi {
             System.out.println("Json error: " + e.getMessage());
             return null;
         }
-
+        saveClasses(arrayResult, school);
         return arrayResult;
+    }
+
+    /**
+     * Save the classes in the database
+     *
+     * @param classes which schould be saved
+     * @param school to which the class belongs
+     */
+    private void saveClasses(JSONArray classes, String school) {
+        int len = classes.length();
+        DBHelper dbHelper = new DBHelper(context, ClassContract.SQL_CREATE_ENTRIES, ClassContract.SQL_DELETE_ENTRIES);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        for (int i = 0; i < len; i++) {
+            try {
+                String sClass = classes.getString(i);
+                ContentValues values = new ContentValues();
+                values.put(ClassContract.ClassEntry.COLUMN_NAME_C_NAME, sClass);
+                values.put(ClassContract.ClassEntry.COLUMN_NAME_C_SCHOOL, school);
+                db.insert(
+                        ClassContract.ClassEntry.TABLE_NAME,
+                        null,
+                        values
+                );
+            } catch (Exception e) {
+                System.out.println("Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
+            }
+        }
     }
 
     /**
@@ -194,19 +238,59 @@ public class StundenPlanApi {
      * @return String array of all classes
      */
     public String[] getClassesArray(String school) {
-        JSONArray classesArray = getClasses(school);
-        int len = classesArray.length();
-        String[] result = new String[len];
+        DBHelper dbHelper = new DBHelper(context, ClassContract.SQL_CREATE_ENTRIES, ClassContract.SQL_DELETE_ENTRIES);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        for (int i = 0; i < len; i++) {
-            try {
-                result[i] = classesArray.getString(i);
-            } catch (Exception e) {
-                System.out.println("Fehler beim konvertieren der Klassen ins Array format: " + e.getMessage());
+        String[] projection = {
+                ClassContract.ClassEntry.COLUMN_NAME_C_NAME
+        };
+
+        String sortOrder = ClassContract.ClassEntry.COLUMN_NAME_C_NAME + " ASC";
+        int count;
+        Cursor c = null;
+        try {
+
+            c = db.query(
+                    ClassContract.ClassEntry.TABLE_NAME,
+                    projection,
+                    null, null, null, null,
+                    sortOrder
+            );
+
+            count = c.getCount();
+        } catch(SQLiteException e){
+            Log.d("SQL", "Fehler beim query der Klassen: " + e.getLocalizedMessage());
+            count = 0;
+            if(c != null){
+                c.close();
             }
         }
 
-        return result;
+        if (count == 0) {
+            if(c != null){
+                c.close();
+            }
+            JSONArray classArray = getClasses(school);
+            int len = classArray.length();
+            String[] result = new String[len];
+
+            for (int i = 0; i < len; i++) {
+                try {
+                    result[i] = classArray.getString(i);
+                } catch (Exception e) {
+                    System.out.println("Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
+                }
+            }
+            return result;
+        } else {
+            c.moveToFirst();
+            String[] result = new String[count];
+            for (int i = 0; i < count; i++) {
+                result[i] = c.getString(c.getColumnIndex(ClassContract.ClassEntry.COLUMN_NAME_C_NAME));
+            }
+            c.close();
+            return result;
+        }
     }
 
 
