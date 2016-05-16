@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -354,7 +356,7 @@ public class StundenPlanApi {
             }
         }
 
-        if (count == 0) {
+        if (count == 0 || isOnline()) {
             if (c != null) {
                 c.close();
             }
@@ -375,12 +377,27 @@ public class StundenPlanApi {
         }
     }
 
+    /**
+     * Save a time table for a class
+     * @param sClass Class of the timetable
+     * @param school School of the class
+     * @param week Calenderweek of the timetable
+     * @param data JSON data of the timetable
+     */
     private void saveTimeTable(String sClass, String school, int week, JSONObject data) {
         DBHelper dbHelper = new DBHelper(context);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         try {
+            String where = TimeTableContract.TimeEntry.COLUMN_NAME_T_SCHOOL + " = \""+ school + "\" " +
+                    "AND " + TimeTableContract.TimeEntry.COLUMN_NAME_T_CLASS + " = \"" + sClass + "\"" +
+                    "AND " + TimeTableContract.TimeEntry.COLUMN_NAME_T_WEEK + " = " + week;
+            db.delete(
+                    TimeTableContract.TimeEntry.TABLE_NAME,
+                    where,
+                    null
+            );
             ContentValues values = new ContentValues();
             values.put(TimeTableContract.TimeEntry.COLUMN_NAME_T_CLASS, sClass);
             values.put(TimeTableContract.TimeEntry.COLUMN_NAME_T_SCHOOL, school);
@@ -483,6 +500,17 @@ public class StundenPlanApi {
         inputStream.close();
 
         return result;
+    }
+
+    /**
+     * Checks if there is a network connection
+     * @return true if there is a network connection
+     */
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
 }

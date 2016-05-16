@@ -10,11 +10,11 @@ public final class TimeTableContract {
     /* Inner class that defines the table contents */
     public static abstract class TimeEntry implements BaseColumns {
         public static final String TABLE_NAME = "timetables";
-        public static final String COLUMN_NAME_T_SCHOOL = "c_school";
-        public static final String COLUMN_NAME_T_CLASS = "c_class";
-        public static final String COLUMN_NAME_T_WEEK = "c_week";
-        public static final String COLUMN_NAME_T_UPDATED = "c_updated";
-        public static final String COLUMN_NAME_T_DATA = "c_data";
+        public static final String COLUMN_NAME_T_SCHOOL = "t_school";
+        public static final String COLUMN_NAME_T_CLASS = "t_class";
+        public static final String COLUMN_NAME_T_WEEK = "t_week";
+        public static final String COLUMN_NAME_T_UPDATED = "t_updated";
+        public static final String COLUMN_NAME_T_DATA = "t_data";
     }
 
     private static final String TEXT_TYPE = " TEXT";
