@@ -15,6 +15,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 public class MainActivity extends Activity {
 
     EditText etResponse;
@@ -58,6 +60,18 @@ public class MainActivity extends Activity {
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 String school = String.valueOf(schools.getSelectedItem());
                 new ClassesAsyncTask().execute(school);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {}
+
+        });
+
+        classes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                String school = String.valueOf(schools.getSelectedItem());
+                String sClass = String.valueOf(classes.getSelectedItem());
+                new TimeAsyncTask().execute(school,sClass);
             }
             @Override
             public void onNothingSelected(AdapterView<?> arg0) {}
@@ -124,6 +138,30 @@ public class MainActivity extends Activity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),
                         android.R.layout.simple_spinner_item, result);
                 classes.setAdapter(adapter);
+
+
+            }catch(Exception e) {
+                etResponse.setText("Fehler beim holen der Daten");
+            }
+
+        }
+    }
+
+    private class TimeAsyncTask extends AsyncTask<String, Void, JSONObject> {
+        @Override
+        protected JSONObject doInBackground(String... params) {
+            StundenPlanApi api = new StundenPlanApi(getApplicationContext());
+            return api.getClassInfo(params[0],params[1]);
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(JSONObject result) {
+            Toast.makeText(getBaseContext(), "Timetable Received!", Toast.LENGTH_LONG).show();
+            try{
+//                etResponse.setText(result.toString(1));
+//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getBaseContext(),
+//                        android.R.layout.simple_spinner_item, result);
+//                classes.setAdapter(adapter);
 
 
             }catch(Exception e) {

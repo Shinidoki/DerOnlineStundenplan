@@ -21,7 +21,7 @@ public final class SchoolContract {
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
     public static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + SchoolEntry.TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + SchoolEntry.TABLE_NAME + " (" +
                     SchoolEntry._ID + " INTEGER PRIMARY KEY," +
                     SchoolEntry.COLUMN_NAME_S_NAME + TEXT_TYPE + COMMA_SEP +
                     SchoolEntry.COLUMN_NAME_S_CITY + TEXT_TYPE + COMMA_SEP +

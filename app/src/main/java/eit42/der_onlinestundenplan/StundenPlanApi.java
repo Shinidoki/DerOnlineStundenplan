@@ -17,10 +17,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import eit42.der_onlinestundenplan.data.ClassContract;
 import eit42.der_onlinestundenplan.data.DBHelper;
 import eit42.der_onlinestundenplan.data.SchoolContract;
+import eit42.der_onlinestundenplan.data.TimeTableContract;
 
 public class StundenPlanApi {
     private static final String url = "http://beta.der-onlinestundenplan.de/api/v1/school";
@@ -65,7 +68,7 @@ public class StundenPlanApi {
      */
     private void saveSchools(JSONArray schools) {
         int len = schools.length();
-        DBHelper dbHelper = new DBHelper(context, SchoolContract.SQL_CREATE_ENTRIES, SchoolContract.SQL_DELETE_ENTRIES);
+        DBHelper dbHelper = new DBHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         for (int i = 0; i < len; i++) {
             try {
@@ -91,7 +94,7 @@ public class StundenPlanApi {
      * @return String array of all schools
      */
     public String[] getSchoolsArray() {
-        DBHelper dbHelper = new DBHelper(context, SchoolContract.SQL_CREATE_ENTRIES, SchoolContract.SQL_DELETE_ENTRIES);
+        DBHelper dbHelper = new DBHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -142,6 +145,7 @@ public class StundenPlanApi {
             String[] result = new String[count];
             for (int i = 0; i < count; i++) {
                 result[i] = c.getString(c.getColumnIndex(SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME));
+                c.move(1);
             }
             c.close();
             return result;
@@ -213,8 +217,10 @@ public class StundenPlanApi {
      */
     private void saveClasses(JSONArray classes, String school) {
         int len = classes.length();
-        DBHelper dbHelper = new DBHelper(context, ClassContract.SQL_CREATE_ENTRIES, ClassContract.SQL_DELETE_ENTRIES);
+        DBHelper dbHelper = new DBHelper(context);
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+
         for (int i = 0; i < len; i++) {
             try {
                 String sClass = classes.getString(i);
@@ -238,7 +244,7 @@ public class StundenPlanApi {
      * @return String array of all classes
      */
     public String[] getClassesArray(String school) {
-        DBHelper dbHelper = new DBHelper(context, ClassContract.SQL_CREATE_ENTRIES, ClassContract.SQL_DELETE_ENTRIES);
+        DBHelper dbHelper = new DBHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -287,6 +293,7 @@ public class StundenPlanApi {
             String[] result = new String[count];
             for (int i = 0; i < count; i++) {
                 result[i] = c.getString(c.getColumnIndex(ClassContract.ClassEntry.COLUMN_NAME_C_NAME));
+                c.move(1);
             }
             c.close();
             return result;
@@ -302,7 +309,9 @@ public class StundenPlanApi {
      * @return Information about the class (currentWeek, Timetable, lastUpdated)
      */
     public JSONObject getClassInfo(String school, String sClass) {
-        return classApiCall("/" + school + "/class/" + sClass);
+        Calendar calendar = new GregorianCalendar();
+        int currentWeek = calendar.get(GregorianCalendar.WEEK_OF_YEAR);
+        return getClassInfo(school, sClass, currentWeek);
     }
 
     /**
@@ -310,11 +319,82 @@ public class StundenPlanApi {
      *
      * @param school The name of the school
      * @param sClass The class name
-     * @param week   Relative weeknumber (-1,0,1...)
+     * @param week   Weeknumber (8,12...)
      * @return Timetable for the class in the specified week
      */
     public JSONObject getClassInfo(String school, String sClass, int week) {
-        return classApiCall("/" + school + "/class/" + sClass + "/" + week);
+        DBHelper dbHelper = new DBHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                TimeTableContract.TimeEntry.COLUMN_NAME_T_DATA
+        };
+
+        String sortOrder = TimeTableContract.TimeEntry.COLUMN_NAME_T_WEEK + " ASC";
+        String where = TimeTableContract.TimeEntry.COLUMN_NAME_T_SCHOOL + " = \""+ school + "\" " +
+                "AND " + TimeTableContract.TimeEntry.COLUMN_NAME_T_CLASS + " = \"" + sClass + "\"" +
+                "AND " + TimeTableContract.TimeEntry.COLUMN_NAME_T_WEEK + " = " + week;
+        int count;
+        Cursor c = null;
+        try {
+
+            c = db.query(
+                    TimeTableContract.TimeEntry.TABLE_NAME,
+                    projection,
+                    where, null, null, null,
+                    sortOrder
+            );
+
+            count = c.getCount();
+        } catch(SQLiteException e){
+            Log.d("SQL", "Fehler beim query des Stundenplans: " + e.getLocalizedMessage());
+            count = 0;
+            if(c != null){
+                c.close();
+            }
+        }
+
+        if (count == 0) {
+            if (c != null) {
+                c.close();
+            }
+            JSONObject timeTable = classApiCall("/" + school + "/class/" + sClass + "/fixedWeek/" + week);
+            if(timeTable != null){
+                timeTable.remove("success");
+            }
+            saveTimeTable(sClass, school, week, timeTable);
+            return timeTable;
+        } else {
+            c.moveToFirst();
+            try {
+                return new JSONObject(c.getString(c.getColumnIndex(TimeTableContract.TimeEntry.COLUMN_NAME_T_DATA)));
+            } catch(Exception e){
+                Log.d("SQL/API", "Fehler beim erstellen des Stundenplan JSON aus Datenbank");
+                return null;
+            }
+        }
+    }
+
+    private void saveTimeTable(String sClass, String school, int week, JSONObject data) {
+        DBHelper dbHelper = new DBHelper(context);
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(TimeTableContract.TimeEntry.COLUMN_NAME_T_CLASS, sClass);
+            values.put(TimeTableContract.TimeEntry.COLUMN_NAME_T_SCHOOL, school);
+            values.put(TimeTableContract.TimeEntry.COLUMN_NAME_T_WEEK, week);
+            values.put(TimeTableContract.TimeEntry.COLUMN_NAME_T_UPDATED, data.getString("last_updated"));
+            values.put(TimeTableContract.TimeEntry.COLUMN_NAME_T_DATA, data.toString());
+            db.insert(
+                    TimeTableContract.TimeEntry.TABLE_NAME,
+                    null,
+                    values
+            );
+        } catch (Exception e) {
+            System.out.println("Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
+        }
     }
 
     /**

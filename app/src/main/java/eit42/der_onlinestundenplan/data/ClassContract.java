@@ -18,7 +18,7 @@ public final class ClassContract {
     private static final String COMMA_SEP = ",";
     //TODO Mit foreign keys arbeiten
     public static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + ClassEntry.TABLE_NAME + " (" +
+            "CREATE TABLE IF NOT EXISTS " + ClassEntry.TABLE_NAME + " (" +
                     ClassEntry._ID + " INTEGER PRIMARY KEY," +
                     ClassEntry.COLUMN_NAME_C_NAME + TEXT_TYPE + COMMA_SEP +
                     ClassEntry.COLUMN_NAME_C_SCHOOL + TEXT_TYPE +
