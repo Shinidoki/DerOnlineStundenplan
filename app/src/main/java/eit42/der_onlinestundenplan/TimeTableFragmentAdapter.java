@@ -37,8 +37,11 @@ public class TimeTableFragmentAdapter extends FragmentPagerAdapter {
         TimeTableElement monday4 = new TimeTableElement("4","AE","RIP","D128");
         TimeTableElement monday5 = new TimeTableElement("5","PG","BER","D128");
         TimeTableElement monday6 = new TimeTableElement("6","PG","BER","D128");
+        TimeTableElement monday7 = new TimeTableElement("6","PG","BER","D128");
+        TimeTableElement monday8 = new TimeTableElement("6","PG","BER","D128");
+        TimeTableElement monday9 = new TimeTableElement("6","PG","BER","D128");
 
-        TimeTableElement[] monday = new TimeTableElement[] {monday1,monday2,monday3,monday4,monday5,monday6};
+        TimeTableElement[] monday = new TimeTableElement[] {monday1,monday2,monday3,monday4,monday5,monday6,monday7,monday8,monday9};
 
         TimeTableElement tuesday1 = new TimeTableElement("1","WuGP","BUK","D128");
         TimeTableElement tuesday2 = new TimeTableElement("2","WuGP","BUK","D128");
