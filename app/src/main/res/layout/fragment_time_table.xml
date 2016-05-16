@@ -8,15 +8,38 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="eit42.der_onlinestundenplan.TimeTableActivity">
 
-
-    <ListView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@android:id/list">
-    </ListView>
-    <TextView
-        android:id="@android:id/empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dayText"
+            android:textSize="25dp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:text="Test"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@android:id/list"
+            android:layout_alignParentBottom="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="25dp"
+            android:layout_marginBottom="25dp"
+            android:divider="@color/colorPrimaryDark"
+            android:dividerHeight="1dp">
+        </ListView>
+        <TextView
+            android:id="@android:id/empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+
 
 </RelativeLayout>

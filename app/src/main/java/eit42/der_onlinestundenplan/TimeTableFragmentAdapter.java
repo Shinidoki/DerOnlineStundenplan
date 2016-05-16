@@ -50,7 +50,9 @@ public class TimeTableFragmentAdapter extends FragmentPagerAdapter {
         TimeTableElement[] tuesday = new TimeTableElement[] {tuesday1,tuesday2,tuesday3,tuesday4,tuesday5,tuesday6};
 
         mondayFragment.setElements(monday);
+        mondayFragment.setDayText("Montag");
         tuesdayFragment.setElements(tuesday);
+        tuesdayFragment.setDayText("Dienstag");
 
     }
 

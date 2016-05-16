@@ -7,9 +7,12 @@
     <TextView
         android:id="@+id/hourTextView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="75"
-        android:text="Test"/>
+        android:text="Test"
+        android:gravity="center"
+        android:textSize="15dp"
+        android:textColor="@color/black"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,11 +24,14 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
-            android:text="Test"/>
+            android:text="Test"
+            android:textSize="20dp"
+            android:textColor="@color/black"/>
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/rtTextView"
-            android:text="Test"/>
+            android:text="Test"
+            android:textSize="15dp"/>
     </LinearLayout>
 </LinearLayout>

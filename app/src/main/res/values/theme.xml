@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <color name="theme_custom_background">#ffffffff</color><color name="theme_devicedefault_background">#ffe3f2fd</color>
-  <style name="Theme.Custom" parent="@android:style/Theme.DeviceDefault">
+  <style name="Theme.Custom" parent="@android:style/Theme.Holo.Light.NoActionBar">
     <item name="android:windowNoTitle">true</item>
     <item name="android:windowActionBar">false</item>
     <item name="android:colorBackground">@color/theme_custom_background</item>
