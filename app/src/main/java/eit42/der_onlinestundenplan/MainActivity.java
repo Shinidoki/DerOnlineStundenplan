@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
 
-        toolbar.setLogo(R.drawable.logo);
         toolbar.inflateMenu(R.menu.menu_main);
 
         //Switch to TimeTable Activity Button

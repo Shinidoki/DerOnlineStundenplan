@@ -1,0 +1,17 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:key="school_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="Schule"
+        android:dialogTitle="Schule"
+        android:summary="Wähle eine neue Schule"/>
+    <ListPreference
+        android:title="Klasse"
+        android:key="class_list"
+        android:dialogTitle="Klasse"
+        android:summary="Wähle eine neue Klasse"/>
+
+</PreferenceScreen>

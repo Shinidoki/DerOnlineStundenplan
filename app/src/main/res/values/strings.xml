@@ -1,12 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Der Onlinestundenplan</string>
-    <string-array name="schools">
+
+    <string name="title_activity_time_table">Stundenplan</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_settings">Einstellungen</string>
+
+    <string-array name="klassen">
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+    </string-array>
+    <string-array name="klassen_values">
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+    </string-array>
+
+
+    <string-array name="schulen">
         <item>Richard</item>
         <item>Helene</item>
         <item>Ludwig</item>
     </string-array>
-    <string name="title_activity_time_table">TimeTable</string>
-    <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string-array name="schulen_values">
+        <item>Richard</item>
+        <item>Helene</item>
+        <item>Ludwig</item>
+    </string-array>
+
+    <string name="pref_header_general">Stundenplan</string>
 </resources>

@@ -1,5 +1,6 @@
 package eit42.der_onlinestundenplan;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -7,12 +8,18 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class TimeTableActivity extends AppCompatActivity {
 
 
-    private TimeTableFragmentAdapter mSectionsPagerAdapter;
+    private TimeTableFragmentAdapter mTimeTableFragmentAdapter;
     private ViewPager mViewPager;
+    private ImageButton lastWeekButton;
+    private ImageButton nextWeekButton;
+    private TextView weekTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,14 +28,22 @@ public class TimeTableActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
+        toolbar.inflateMenu(R.menu.menu_time_table);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new TimeTableFragmentAdapter(getSupportFragmentManager());
-        mSectionsPagerAdapter.setFragments(this);
+        mTimeTableFragmentAdapter = new TimeTableFragmentAdapter(getSupportFragmentManager());
+        mTimeTableFragmentAdapter.setFragments(this);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setAdapter(mTimeTableFragmentAdapter);
+
+        weekTextView = (TextView) findViewById(R.id.weekText);
+        nextWeekButton = (ImageButton) findViewById(R.id.nextWeekButton);
+        lastWeekButton = (ImageButton) findViewById(R.id.lastWeekButton);
+
+
     }
 
 
@@ -48,6 +63,8 @@ public class TimeTableActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(TimeTableActivity.this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         }
 
