@@ -1,252 +1,46 @@
 package eit42.der_onlinestundenplan;
 
-
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
+/**
+ * Created by L.Schnitzmeier on 19.05.2016.
+ */
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.v7.app.ActionBar;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
-import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
+import android.widget.Toast;
 
-import java.util.List;
-
-/**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p/>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
-public class SettingsActivity extends AppCompatPreferenceActivity implements Preference.OnPreferenceClickListener {
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
-
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            }else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
-            }
-            return true;
-        }
-    };
-
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
+public class SettingsActivity extends PreferenceActivity
+        implements Preference.OnPreferenceChangeListener {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupActionBar();
 
-        final ListPreference schoolListPreference = (ListPreference) findPreference("school_list");
-        final ListPreference classListPreference = (ListPreference) findPreference("class_list");
+        //noinspection deprecation
+        addPreferencesFromResource(R.xml.preferences);
 
-        // THIS IS REQUIRED IF YOU DON'T HAVE 'entries' and 'entryValues' in your XML
-        setListPreferenceData(schoolListPreference);
-        setListPreferenceData(classListPreference);
+        //noinspection deprecation
+        Preference schoollistPref = findPreference(getString(R.string.preference_schoollist_key));
+        schoollistPref.setOnPreferenceChangeListener(this);
 
+        //noinspection deprecation
+        Preference classlistPref = findPreference(getString(R.string.preference_schoollist_key));
+        classlistPref.setOnPreferenceChangeListener(this);
 
-        classListPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            @Override
-            public boolean onPreferenceClick(Preference preference)
-            {
-                setListPreferenceData(classListPreference);
-                return false;
-            }
-        });
-        schoolListPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String savedSchoolList = sharedPrefs.getString(schoollistPref.getKey(), "");
+        onPreferenceChange(schoollistPref, savedSchoolList);
 
-                setListPreferenceData(schoolListPreference);
-                return false;
-            }
-        });
-    }
+        String savedClassList = sharedPrefs.getString(classlistPref.getKey(),"");
+        onPreferenceChange(classlistPref,savedClassList);
 
-    protected static void setListPreferenceData(ListPreference lp) {
-        if(lp.getKey() == "school_list")
-        {
-            CharSequence[] entries = { "Richard", "Helene","Ludwig", "Rafael"};
-            CharSequence[] entryValues = {"1", "2", "3", "4"};
-            lp.setEntries(entries);
-            lp.setDefaultValue("1");
-            lp.setEntryValues(entryValues);
-        }else if(lp.getKey() == "class_list")
-        {
-            CharSequence[] entries = { "EIT42", "EIT43", "EIT52", "EIT53", "ASDF"};
-            CharSequence[] entryValues = {"1", "2", "3", "4", "5"};
-            lp.setEntries(entries);
-            lp.setDefaultValue("1");
-            lp.setEntryValues(entryValues);
-        }
-    }
-
-
-
-    @Override
-    public boolean onPreferenceClick(Preference preference)
-    {
-        if((preference instanceof ListPreference) && (preference.getKey().equals("school_list"))) {
-            ListPreference lp = (ListPreference) preference;
-            CharSequence[] entries = { "Richard", "Helene","Ludwig", "Rafael"};
-            CharSequence[] entryValues = {"1", "2", "3", "4"};
-            lp.setEntries(entries);
-            lp.setDefaultValue("1");
-            lp.setEntryValues(entryValues);
-            return true;
-        }else if((preference instanceof ListPreference) && (preference.getKey().equals("class_list")))
-        {
-            ListPreference lp = (ListPreference) preference;
-            CharSequence[] entries = { "EIT42", "EIT43", "EIT52", "EIT53", "ASDF"};
-            CharSequence[] entryValues = {"1", "2", "3", "4", "5"};
-            lp.setEntries(entries);
-            lp.setDefaultValue("1");
-            lp.setEntryValues(entryValues);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
-                NavUtils.navigateUpFromSameTask(this);
-            }
-            return true;
-        }
-        return super.onMenuItemSelected(featureId, item);
-    }
+    public boolean onPreferenceChange(Preference preference, Object value) {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
-    }
-
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
-            setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-            bindPreferenceSummaryToValue(findPreference("school_list"));
-            bindPreferenceSummaryToValue(findPreference("class_list"));
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
+        preference.setSummary(value.toString());
+        return true;
     }
 }

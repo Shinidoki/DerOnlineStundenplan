@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:background="@color/white"
     tools:context="eit42.der_onlinestundenplan.TimeTableActivity">
 
     <android.support.v4.view.ViewPager
@@ -20,53 +21,13 @@
         android:orientation="vertical">
 
         <include android:id="@+id/app_bar" layout="@layout/app_bar"></include>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="100"
-            android:id="@+id/weekLineLayout"
-            android:layout_marginTop="25dp"
-            android:orientation="horizontal">
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/lastWeekButton"
-                android:layout_gravity="start"
-                android:layout_marginLeft="25dp"
-                android:layout_marginStart="25dp"
-                android:layout_weight="25"
-                android:background="@drawable/border_buttons"
-                android:src="@drawable/ic_menu_back"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/weekText"
-                android:layout_weight="50"
-                android:text="Woche"
-                android:textSize="30sp"
-                android:gravity="center"
-                android:textColor="@color/primary_text"/>
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/nextWeekButton"
-                android:layout_gravity="end"
-                android:layout_marginRight="25dp"
-                android:layout_marginEnd="25dp"
-                android:layout_weight="25"
-                android:background="@drawable/border_buttons"
-                android:src="@drawable/ic_menu_forward"/>
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/timeTableFragment"
+                android:name="eit42.der_onlinestundenplan.TimeTableFragment"
+                tools:layout="@layout/fragment_time_table" />
         </LinearLayout>
 
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/timeTableFragment"
-            android:name="eit42.der_onlinestundenplan.TimeTableFragment"
-            tools:layout="@layout/fragment_time_table" />
-
-    </LinearLayout>
-
-
+    <include android:id="@+id/bottom_toolbar" layout="@layout/bottom_toolbar"></include>
 </android.support.design.widget.CoordinatorLayout>

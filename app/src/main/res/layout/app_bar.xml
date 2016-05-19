@@ -25,13 +25,14 @@
             android:layout_weight="20"/>
         <TextView
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:text="Onlinestundenplan"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginStart="2dp"
+            android:text="@string/toolbar_title"
             android:textColor="@color/primary_text"
             android:layout_weight="80"
-            android:textSize="25sp"
-            android:layout_gravity="start|bottom"
-            android:textAlignment="center"/>
+            android:textSize="20sp"
+            android:layout_gravity="center|start"/>
 
     </LinearLayout>
 </android.support.v7.widget.Toolbar>

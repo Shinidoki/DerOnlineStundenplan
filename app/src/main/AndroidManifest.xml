@@ -25,15 +25,16 @@
             android:name=".TimeTableActivity"
             android:label="@string/title_activity_time_table"
             android:theme="@style/AppTheme" />
+
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".TimeTableActivity"
-            android:screenOrientation="portrait">
+            android:label="Einstellungen"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="eit42.der_onlinestundenplan.TimeTableActivity" />
+                android:value="eit42.der_onlinestundenplan.MainActivity" />
         </activity>
+
     </application>
 
 </manifest>

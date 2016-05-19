@@ -1,6 +1,8 @@
 package eit42.der_onlinestundenplan;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class TimeTableActivity extends AppCompatActivity {
 
@@ -26,9 +29,7 @@ public class TimeTableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_table);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
-        toolbar.inflateMenu(R.menu.menu_time_table);
+        initToolbars();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -39,11 +40,16 @@ public class TimeTableActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mTimeTableFragmentAdapter);
 
-        weekTextView = (TextView) findViewById(R.id.weekText);
-        nextWeekButton = (ImageButton) findViewById(R.id.nextWeekButton);
-        lastWeekButton = (ImageButton) findViewById(R.id.lastWeekButton);
 
+    }
 
+    public void initToolbars()
+    {
+        Toolbar topToolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(topToolbar);
+        topToolbar.inflateMenu(R.menu.menu_time_table);
+
+        Toolbar bottomToolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
     }
 
 
@@ -63,8 +69,23 @@ public class TimeTableActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(TimeTableActivity.this, SettingsActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }else if(id == R.id.action_refresh)
+        {
+            SharedPreferences sPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+            String prefSchoollistKey = getString(R.string.preference_schoollist_key);
+            String prefSchoollistDefault = getString(R.string.preference_schoollist_default);
+            String schoollist = sPrefs.getString(prefSchoollistKey,prefSchoollistDefault);
+
+            String prefClasslistKey = getString(R.string.preference_classlist_key);
+            String prefClasslistDefault = getString(R.string.preference_classlist_default);
+            String classlist = sPrefs.getString(prefClasslistKey,prefClasslistDefault);
+
+            Toast.makeText(this,"Stundenplan wird aktualisiert",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,classlist + ";" + schoollist,Toast.LENGTH_SHORT).show();
+
             return true;
         }
 
