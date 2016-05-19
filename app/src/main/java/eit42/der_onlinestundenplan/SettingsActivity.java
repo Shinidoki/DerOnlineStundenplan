@@ -3,11 +3,13 @@ package eit42.der_onlinestundenplan;
 /**
  * Created by L.Schnitzmeier on 19.05.2016.
  */
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.renderscript.Sampler;
 import android.widget.Toast;
 
 public class SettingsActivity extends PreferenceActivity
@@ -25,10 +27,12 @@ public class SettingsActivity extends PreferenceActivity
         schoollistPref.setOnPreferenceChangeListener(this);
 
         //noinspection deprecation
-        Preference classlistPref = findPreference(getString(R.string.preference_schoollist_key));
+        Preference classlistPref = findPreference(getString(R.string.preference_classlist_key));
         classlistPref.setOnPreferenceChangeListener(this);
 
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String sPrefsBaseKey = getString(R.string.shared_preference_base_key);
+
+        SharedPreferences sharedPrefs = this.getSharedPreferences(sPrefsBaseKey, Context.MODE_PRIVATE);//PreferenceManager.getDefaultSharedPreferences(this);
         String savedSchoolList = sharedPrefs.getString(schoollistPref.getKey(), "");
         onPreferenceChange(schoollistPref, savedSchoolList);
 

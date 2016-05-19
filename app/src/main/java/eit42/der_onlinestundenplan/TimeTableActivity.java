@@ -1,5 +1,6 @@
 package eit42.der_onlinestundenplan;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -24,12 +25,40 @@ public class TimeTableActivity extends AppCompatActivity {
     private ImageButton nextWeekButton;
     private TextView weekTextView;
 
+    private Toolbar topToolbar;
+    private Toolbar bottomToolbar;
+    private TextView toolbarSubtitle;
+
+    //Shared Preferences
+    private SharedPreferences sPrefs;
+    private String sPrefsBaseKey ;
+    private String sPrefsSubtitleKey;
+
+    String prefSchoollistKey;
+    String prefSchoollistDefault;
+    String prefClasslistKey;
+    String prefClasslistDefault;
+
+    String currentSchool;
+    String currentClass;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_table);
 
-        initToolbars();
+        loadPrefSettings();
+        loadCurrentPrefs();
+
+        //Toolbar initialization
+        topToolbar = (Toolbar) findViewById(R.id.app_bar);
+        bottomToolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
+        updateSubtitleText();
+        setSupportActionBar(topToolbar);
+        topToolbar.inflateMenu(R.menu.menu_time_table);
+
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -43,14 +72,43 @@ public class TimeTableActivity extends AppCompatActivity {
 
     }
 
-    public void initToolbars()
-    {
-        Toolbar topToolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(topToolbar);
-        topToolbar.inflateMenu(R.menu.menu_time_table);
 
-        Toolbar bottomToolbar = (Toolbar) findViewById(R.id.bottom_toolbar);
+    public void updateSubtitleText()
+    {
+        if(toolbarSubtitle == null)
+        {
+            toolbarSubtitle = (TextView) topToolbar.findViewById(R.id.toolbar_subtitle);
+        }
+        if(currentClass != "" && currentSchool != "")
+        {
+            toolbarSubtitle.setText(currentClass + " | " + currentSchool);
+        }else toolbarSubtitle.setText("Keine Schule/Klasse gewählt");
+
     }
+
+    public void loadPrefSettings()
+    {
+        sPrefsBaseKey = getString(R.string.shared_preference_base_key);
+        sPrefsSubtitleKey = getString(R.string.shared_preference_toolbar_key)+".subtitle";
+
+        sPrefs = this.getSharedPreferences(sPrefsBaseKey,Context.MODE_PRIVATE);
+
+        //Get school key & default
+        prefSchoollistKey = getString(R.string.preference_schoollist_key);
+        prefSchoollistDefault = getString(R.string.preference_schoollist_default);
+        //Get school key & default
+        prefClasslistKey = getString(R.string.preference_classlist_key);
+        prefClasslistDefault = getString(R.string.preference_classlist_default);
+    }
+
+    public void loadCurrentPrefs()
+    {
+        //Set current values
+        currentSchool = sPrefs.getString(prefSchoollistKey,prefSchoollistDefault);
+        currentClass = sPrefs.getString(prefClasslistKey,prefClasslistDefault);
+
+    }
+
 
 
     @Override
@@ -73,18 +131,11 @@ public class TimeTableActivity extends AppCompatActivity {
             return true;
         }else if(id == R.id.action_refresh)
         {
-            SharedPreferences sPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-            String prefSchoollistKey = getString(R.string.preference_schoollist_key);
-            String prefSchoollistDefault = getString(R.string.preference_schoollist_default);
-            String schoollist = sPrefs.getString(prefSchoollistKey,prefSchoollistDefault);
-
-            String prefClasslistKey = getString(R.string.preference_classlist_key);
-            String prefClasslistDefault = getString(R.string.preference_classlist_default);
-            String classlist = sPrefs.getString(prefClasslistKey,prefClasslistDefault);
+            loadCurrentPrefs();
+            updateSubtitleText();
 
             Toast.makeText(this,"Stundenplan wird aktualisiert",Toast.LENGTH_SHORT).show();
-            Toast.makeText(this,classlist + ";" + schoollist,Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,currentClass + ";" + currentSchool,Toast.LENGTH_SHORT).show();
 
             return true;
         }

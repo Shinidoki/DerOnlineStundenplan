@@ -23,16 +23,34 @@
             android:src="@drawable/logo"
             android:layout_margin="2dp"
             android:layout_weight="20"/>
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
-            android:layout_marginStart="2dp"
-            android:text="@string/toolbar_title"
-            android:textColor="@color/primary_text"
             android:layout_weight="80"
-            android:textSize="20sp"
-            android:layout_gravity="center|start"/>
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginStart="2dp"
+                android:text="@string/toolbar_title"
+                android:textColor="@color/primary_text"
+                android:textSize="20sp"
+                android:layout_gravity="center|start"/>
+            <TextView
+                android:id="@+id/toolbar_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginStart="2dp"
+                android:text="@string/toolbar_subtitle"
+                android:textColor="@color/secondary_text"
+                android:textSize="15sp"
+                android:layout_gravity="center|start"
+                />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 </android.support.v7.widget.Toolbar>

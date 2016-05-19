@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Der Onlinestundenplan</string>
+    <string name="app_name">Onlinestundenplan</string>
 
     <string name="title_activity_time_table">Stundenplan</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_settings">Einstellungen</string>
     <string name="toolbar_title">Onlinestundenplan</string>
+    <string name="toolbar_subtitle">RvWBK | EIT42</string>
     <string name="default_week_text">-Woche-</string>
 
 
     //Preferences
-
+    
+    <string name="shared_preference_base_key">com.stundenplan.app</string>
+    <string name="shared_preference_toolbar_key">com.stundenplan.app.toolbar</string>
+    
         //School
-    <string name="preference_schoollist_title">Liste der Schulen</string>
-    <string name="preference_schoollist_key">Richard</string>
-    <string name="preference_schoollist_default">Richard</string>
+    <string name="preference_schoollist_title">Schule</string>
+    <string name="preference_schoollist_key">schoollist</string>
+    <string name="preference_schoollist_default">RvWBK</string>
 
         //Class
-    <string name="preference_classlist_title">Liste der Klassen</string>
-    <string name="preference_classlist_key">EIT42</string>
+    <string name="preference_classlist_title">Klasse</string>
+    <string name="preference_classlist_key">classlist</string>
     <string name="preference_classlist_default">EIT42</string>
 
     <string-array name="klassen">
@@ -77,9 +81,9 @@
 
 
     <string-array name="schulen">
-        <item>Richard</item>
-        <item>Helene</item>
-        <item>Ludwig</item>
+        <item>RvWBK</item>
+        <item>HWBK</item>
+        <item>LEBK</item>
     </string-array>
     <string-array name="schulen_values">
         <item>Richard</item>
