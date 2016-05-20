@@ -14,6 +14,7 @@
         android:weightSum="100">
 
         <ImageButton
+            android:id="@+id/lastWeekButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
@@ -21,6 +22,7 @@
             android:src="@drawable/ic_navigation_chevron_left"
             android:background="@drawable/border_buttons"/>
         <TextView
+            android:id="@+id/weekTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="60"
@@ -30,6 +32,7 @@
             android:gravity="center"
             android:textColor="@color/white"/>
         <ImageButton
+            android:id="@+id/nextWeekButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"

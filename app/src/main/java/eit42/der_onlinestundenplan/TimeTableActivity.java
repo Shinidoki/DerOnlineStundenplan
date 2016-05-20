@@ -11,10 +11,13 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 public class TimeTableActivity extends AppCompatActivity {
 
@@ -42,6 +45,8 @@ public class TimeTableActivity extends AppCompatActivity {
     String currentSchool;
     String currentClass;
 
+    static int weekCounter = 0;
+
 
 
     @Override
@@ -58,6 +63,29 @@ public class TimeTableActivity extends AppCompatActivity {
         updateSubtitleText();
         setSupportActionBar(topToolbar);
         topToolbar.inflateMenu(R.menu.menu_time_table);
+
+
+        ImageButton lastWeekButton = (ImageButton) bottomToolbar.findViewById(R.id.lastWeekButton);
+        ImageButton nextWeekButton = (ImageButton) bottomToolbar.findViewById(R.id.nextWeekButton);
+        final TextView weekText = (TextView) bottomToolbar.findViewById(R.id.weekTextView);
+
+        weekText.setText("Woche "+weekCounter);
+
+        lastWeekButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                weekCounter--;
+                weekText.setText("Woche "+weekCounter);
+            }
+        });
+
+        nextWeekButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                weekCounter++;
+                weekText.setText("Woche "+weekCounter);
+            }
+        });
 
 
         // Create the adapter that will return a fragment for each of the three
@@ -107,7 +135,6 @@ public class TimeTableActivity extends AppCompatActivity {
         //Set current values
         currentSchool = sPrefs.getString(prefSchoollistKey,prefSchoollistDefault);
         currentClass = sPrefs.getString(prefClasslistKey,prefClasslistDefault);
-
     }
 
 
@@ -134,6 +161,8 @@ public class TimeTableActivity extends AppCompatActivity {
         {
             loadCurrentPrefs();
             updateSubtitleText();
+
+            //TODO Neue Stundenplandaten laden und ersetzen
 
             Toast.makeText(this,"Stundenplan wird aktualisiert",Toast.LENGTH_SHORT).show();
             Toast.makeText(this,currentClass + ";" + currentSchool,Toast.LENGTH_SHORT).show();
