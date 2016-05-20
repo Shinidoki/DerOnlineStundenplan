@@ -82,7 +82,7 @@ public class TimeTableActivity extends AppCompatActivity {
         if(currentClass != "" && currentSchool != "")
         {
             toolbarSubtitle.setText(currentClass + " | " + currentSchool);
-        }else toolbarSubtitle.setText("Keine Schule/Klasse gewählt");
+        }else toolbarSubtitle.setText(getString(R.string.no_school_error_message));
 
     }
 
@@ -99,6 +99,7 @@ public class TimeTableActivity extends AppCompatActivity {
         //Get school key & default
         prefClasslistKey = getString(R.string.preference_classlist_key);
         prefClasslistDefault = getString(R.string.preference_classlist_default);
+
     }
 
     public void loadCurrentPrefs()
