@@ -477,7 +477,7 @@ public class StundenPlanApi {
                 urlConnection.disconnect();
             }
         } catch (Exception e) {
-            Log.d("InputStream", e.getLocalizedMessage());
+            //Log.d("InputStream", e.getLocalizedMessage(),e);
         }
 
         return result;

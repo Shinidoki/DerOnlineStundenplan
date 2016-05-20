@@ -5,34 +5,56 @@ package eit42.der_onlinestundenplan;
  */
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.renderscript.Sampler;
+import android.util.Log;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.List;
+
+import eit42.der_onlinestundenplan.data.DBHelper;
+import eit42.der_onlinestundenplan.data.SchoolContract;
 
 public class SettingsActivity extends PreferenceActivity
         implements Preference.OnPreferenceChangeListener {
 
     SharedPreferences sharedPrefs;
     SharedPreferences.Editor editor;
+    String schoollistKey;
+    String classlistKey;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        schoollistKey = getString(R.string.preference_schoollist_key);
+        classlistKey = getString(R.string.preference_classlist_key);
+
         //noinspection deprecation
         addPreferencesFromResource(R.xml.preferences);
 
         //noinspection deprecation
-        Preference schoollistPref = findPreference(getString(R.string.preference_schoollist_key));
+        ListPreference schoollistPref = (ListPreference) findPreference(schoollistKey);
         schoollistPref.setOnPreferenceChangeListener(this);
-        String schoolDef = getString(R.string.preference_schoollist_default);
+        final String schoolDef = getString(R.string.preference_schoollist_default);
 
         //noinspection deprecation
-        Preference classlistPref = findPreference(getString(R.string.preference_classlist_key));
+        ListPreference classlistPref = (ListPreference) findPreference(classlistKey);
         classlistPref.setOnPreferenceChangeListener(this);
+        classlistPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                return false;
+            }
+        });
         String classDef = getString(R.string.preference_classlist_default);
 
 
@@ -57,4 +79,5 @@ public class SettingsActivity extends PreferenceActivity
 
         return true;
     }
+
 }
