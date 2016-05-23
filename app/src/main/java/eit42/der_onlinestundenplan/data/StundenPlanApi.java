@@ -1,4 +1,4 @@
-package eit42.der_onlinestundenplan;
+package eit42.der_onlinestundenplan.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,10 +22,6 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import eit42.der_onlinestundenplan.data.ClassContract;
-import eit42.der_onlinestundenplan.data.DBHelper;
-import eit42.der_onlinestundenplan.data.SchoolContract;
-import eit42.der_onlinestundenplan.data.TimeTableContract;
 
 public class StundenPlanApi {
     private static final String url = "http://beta.der-onlinestundenplan.de/api/v1/school";
@@ -55,7 +51,7 @@ public class StundenPlanApi {
             JSONObject json = new JSONObject(apiResult);
             result = json.getJSONArray("schools");
         } catch (Exception e) {
-            System.out.println("Json error: " + e.getMessage());
+            Log.d("API/JSON Schools","Json error: " + e.getMessage());
             return null;
         }
         schools = result;
@@ -70,7 +66,7 @@ public class StundenPlanApi {
      */
     private void saveSchools(JSONArray schools) {
         int len = schools.length();
-        DBHelper dbHelper = new DBHelper(context);
+        DBHelper dbHelper = DBHelper.getInstance(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         for (int i = 0; i < len; i++) {
             try {
@@ -85,9 +81,10 @@ public class StundenPlanApi {
                         values
                 );
             } catch (Exception e) {
-                System.out.println("Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
+                Log.d("SQL/API School", "Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
             }
         }
+        db.close();
     }
 
     /**
@@ -96,7 +93,7 @@ public class StundenPlanApi {
      * @return String array of all schools
      */
     public String[] getSchoolsArray() {
-        DBHelper dbHelper = new DBHelper(context);
+        DBHelper dbHelper = DBHelper.getInstance(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -138,7 +135,7 @@ public class StundenPlanApi {
                 try {
                     result[i] = schoolArray.getJSONObject(i).getString("name");
                 } catch (Exception e) {
-                    System.out.println("Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
+                    Log.d("API School","Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
                 }
             }
             return result;
@@ -167,7 +164,7 @@ public class StundenPlanApi {
         try {
             result = new JSONObject(apiResult);
         } catch (Exception e) {
-            System.out.println("Json error: " + e.getMessage());
+            Log.d("API/SchoolInfo","Json error: " + e.getMessage());
             return null;
         }
         return result;
@@ -187,7 +184,7 @@ public class StundenPlanApi {
             try {
                 return classes.getJSONArray(school);
             } catch (Exception e) {
-                System.out.println("Fehler beim holen der Klassen: " + e.getMessage());
+                Log.d("API/Classes","Fehler beim holen der Klassen: " + e.getMessage());
                 return null;
             }
         }
@@ -204,7 +201,7 @@ public class StundenPlanApi {
             classes.put(school, arrayResult);
 
         } catch (Exception e) {
-            System.out.println("Json error: " + e.getMessage());
+            Log.d("API/Classes","Json error: " + e.getMessage());
             return null;
         }
         saveClasses(arrayResult, school);
@@ -219,7 +216,7 @@ public class StundenPlanApi {
      */
     private void saveClasses(JSONArray classes, String school) {
         int len = classes.length();
-        DBHelper dbHelper = new DBHelper(context);
+        DBHelper dbHelper = DBHelper.getInstance(context);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -235,9 +232,10 @@ public class StundenPlanApi {
                         values
                 );
             } catch (Exception e) {
-                System.out.println("Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
+                Log.d("API/Classes","Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
             }
         }
+        db.close();
     }
 
     /**
@@ -246,7 +244,7 @@ public class StundenPlanApi {
      * @return String array of all classes
      */
     public String[] getClassesArray(String school) {
-        DBHelper dbHelper = new DBHelper(context);
+        DBHelper dbHelper = DBHelper.getInstance(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -286,7 +284,7 @@ public class StundenPlanApi {
                 try {
                     result[i] = classArray.getString(i);
                 } catch (Exception e) {
-                    System.out.println("Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
+                    Log.d("API/Schools","Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
                 }
             }
             return result;
@@ -325,7 +323,7 @@ public class StundenPlanApi {
      * @return Timetable for the class in the specified week
      */
     public JSONObject getClassInfo(String school, String sClass, int week) {
-        DBHelper dbHelper = new DBHelper(context);
+        DBHelper dbHelper = DBHelper.getInstance(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String[] projection = {
@@ -363,8 +361,9 @@ public class StundenPlanApi {
             JSONObject timeTable = classApiCall("/" + school + "/class/" + sClass + "/fixedWeek/" + week);
             if(timeTable != null){
                 timeTable.remove("success");
+                saveTimeTable(sClass, school, week, timeTable);
             }
-            saveTimeTable(sClass, school, week, timeTable);
+
             return timeTable;
         } else {
             c.moveToFirst();
@@ -385,7 +384,7 @@ public class StundenPlanApi {
      * @param data JSON data of the timetable
      */
     private void saveTimeTable(String sClass, String school, int week, JSONObject data) {
-        DBHelper dbHelper = new DBHelper(context);
+        DBHelper dbHelper = DBHelper.getInstance(context);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -410,8 +409,10 @@ public class StundenPlanApi {
                     values
             );
         } catch (Exception e) {
-            System.out.println("Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
+            Log.d("API/Schools","Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
         }
+
+        db.close();
     }
 
     /**
@@ -429,7 +430,7 @@ public class StundenPlanApi {
             JSONObject json = new JSONObject(apiResult);
             result = json.getJSONArray("schools");
         } catch (Exception e) {
-            System.out.println("Json error: " + e.getMessage());
+            Log.d("API/AvailableWeeks","Json error: " + e.getMessage());
             return null;
         }
         schools = result;
@@ -447,8 +448,12 @@ public class StundenPlanApi {
         JSONObject result;
         try {
             result = new JSONObject(apiResult);
+            if(!result.getString("success").equals("true")){
+                Log.d("APIResult", "Got no success from API: "+ apiResult);
+                return null;
+            }
         } catch (Exception e) {
-            System.out.println("Json error: " + e.getMessage());
+            Log.d("APICall", "Json error: " + e.getMessage());
             return null;
         }
         return result;

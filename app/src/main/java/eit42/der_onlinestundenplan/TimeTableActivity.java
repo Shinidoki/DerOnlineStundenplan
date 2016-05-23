@@ -3,47 +3,33 @@ package eit42.der_onlinestundenplan;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
+
+import eit42.der_onlinestundenplan.data.StundenPlanApi;
 
 public class TimeTableActivity extends AppCompatActivity {
 
 
     private TimeTableFragmentAdapter mTimeTableFragmentAdapter;
     private ViewPager mViewPager;
-    private ImageButton lastWeekButton;
-    private ImageButton nextWeekButton;
-    private TextView weekTextView;
-    private ImageButton nextWeekBtn, lastWeekBtn;
+    private ImageButton lastWeekButton, nextWeekButton;
     private int currentWeek;
-    private Fragment timeTableFragment;
 
     private Toolbar topToolbar;
     private Toolbar bottomToolbar;
@@ -83,8 +69,8 @@ public class TimeTableActivity extends AppCompatActivity {
         mTimeTableFragmentAdapter = new TimeTableFragmentAdapter(getSupportFragmentManager());
 
 
-        ImageButton lastWeekButton = (ImageButton) bottomToolbar.findViewById(R.id.lastWeekButton);
-        ImageButton nextWeekButton = (ImageButton) bottomToolbar.findViewById(R.id.nextWeekButton);
+        lastWeekButton = (ImageButton) bottomToolbar.findViewById(R.id.lastWeekButton);
+        nextWeekButton = (ImageButton) bottomToolbar.findViewById(R.id.nextWeekButton);
         final TextView weekText = (TextView) bottomToolbar.findViewById(R.id.weekTextView);
 
         weekText.setText("Woche " + weekCounter);
@@ -93,28 +79,24 @@ public class TimeTableActivity extends AppCompatActivity {
         final String school = "RvWBK";
         final String sClass = "EIT42";
         Calendar cal = new GregorianCalendar();
-        currentWeek = cal.get(GregorianCalendar.WEEK_OF_YEAR);
-        final StundenPlanApi api = new StundenPlanApi(this);
+        // -1 bei der aktuellen Kalenderwoche da die API sonst die nächste Woche zurückliefert
+        currentWeek = cal.get(GregorianCalendar.WEEK_OF_YEAR) - 1;
 
         new TimeAsyncTask().execute(school,sClass);
 
-        nextWeekBtn = (ImageButton) findViewById(R.id.nextWeekButton);
-        nextWeekBtn.setOnClickListener(new View.OnClickListener() {
+        nextWeekButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(weekCounter < 3)
-                    weekCounter++;
+                weekCounter++;
                 new TimeAsyncTask().execute(school, sClass);
                 weekText.setText("Woche "+ weekCounter);
             }
         });
 
-        lastWeekBtn = (ImageButton) findViewById(R.id.lastWeekButton);
-        lastWeekBtn.setOnClickListener(new View.OnClickListener() {
+        lastWeekButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(weekCounter > -3)
-                    weekCounter--;
+                weekCounter--;
                 new TimeAsyncTask().execute(school,sClass);
                 weekText.setText("Woche "+ weekCounter);
             }
@@ -207,11 +189,11 @@ public class TimeTableActivity extends AppCompatActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(JSONObject result) {
-            mTimeTableFragmentAdapter.setFragments(result);
-
-            // Set up the ViewPager with the sections adapter.
-//            mViewPager = (ViewPager) findViewById(R.id.container);
-//            mViewPager.setAdapter(mTimeTableFragmentAdapter);
+            if(result != null){
+                mTimeTableFragmentAdapter.setFragments(result);
+            } else {
+                Toast.makeText(getBaseContext(),"Keine Daten",Toast.LENGTH_SHORT).show();
+            }
 
         }
     }

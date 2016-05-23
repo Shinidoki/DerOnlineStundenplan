@@ -29,27 +29,26 @@ public class TimeTableFragmentAdapter extends FragmentPagerAdapter {
     {
         super(fm);
         fragmentManager = fm;
-    }
 
-    public void setFragments(JSONObject timeTable)
-    {
         mondayFragment = new TimeTableFragment();
         tuesdayFragment = new TimeTableFragment();
         wednesdayFragment = new TimeTableFragment();
         thursdayFragment = new TimeTableFragment();
         fridayFragment = new TimeTableFragment();
+    }
 
-
-
+    public void setFragments(JSONObject timeTable)
+    {
         JSONArray days = new JSONArray();
         List<TimeTableElement[]> weekDays = new ArrayList<>(7);
+        String[] dayNames = new String[7];
 
         try {
             days = timeTable.getJSONObject("timeTable").getJSONArray("days");
             JSONArray times = timeTable.getJSONObject("timeTable").getJSONArray("times");
             for (int i = 0; i < days.length(); i++) {
                 JSONArray dayData = days.getJSONObject(i).getJSONArray("data");
-
+                dayNames[i] = days.getJSONObject(i).getString("name");
                 TimeTableElement[] dayElement = new TimeTableElement[times.length()];
                 for (int j = 0; j < dayData.length(); j++) {
                     //TODO Momentan werden keine geteilten Stunden angezeigt. Wenn z.B. 2 Lehrer einer Klasse zugeteilt sind
@@ -76,21 +75,25 @@ public class TimeTableFragmentAdapter extends FragmentPagerAdapter {
 
 //        TimeTableElement[] monday = new TimeTableElement[day]
 
-
-
+        List<Fragment> test = fragmentManager.getFragments();
         mondayFragment.setElements(weekDays.get(0));
-        mondayFragment.setDayText("Montag");
+        mondayFragment.setDayText(dayNames[0]);
         tuesdayFragment.setElements(weekDays.get(1));
-        tuesdayFragment.setDayText("Dienstag");
+        tuesdayFragment.setDayText(dayNames[1]);
         wednesdayFragment.setElements(weekDays.get(2));
-        wednesdayFragment.setDayText("Mittwoch");
+        wednesdayFragment.setDayText(dayNames[2]);
         thursdayFragment.setElements(weekDays.get(3));
-        thursdayFragment.setDayText("Donnerstag");
+        thursdayFragment.setDayText(dayNames[3]);
         fridayFragment.setElements(weekDays.get(4));
-        fridayFragment.setDayText("Freitag");
+        fridayFragment.setDayText(dayNames[4]);
 
+        notifyDataSetChanged();
     }
 
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
 
     @Override
     public Fragment getItem(int position) {
@@ -117,12 +120,6 @@ public class TimeTableFragmentAdapter extends FragmentPagerAdapter {
         }
         return frag;
     }
-
-    public void update()
-    {
-
-    }
-
 
     @Override
     public int getCount() {

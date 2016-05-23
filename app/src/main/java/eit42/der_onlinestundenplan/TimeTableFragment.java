@@ -45,9 +45,10 @@ public class TimeTableFragment extends ListFragment {
         }
 
         try {
-            timeTableData = new JSONObject(jsonString);
+            if(!jsonString.isEmpty())
+                timeTableData = new JSONObject(jsonString);
         } catch (Exception e){
-            Log.d("JSON", "Fehler beim erstellen des Stundenplan JSONs im Fragment");
+            Log.d("JSON", "Fehler beim erstellen des Stundenplan JSONs im Fragment." + e.getLocalizedMessage());
         }
 
         View rootView = inflater.inflate(R.layout.fragment_time_table, container, false);

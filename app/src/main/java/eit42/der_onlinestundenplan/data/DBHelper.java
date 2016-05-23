@@ -10,8 +10,18 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "Stundenplan.db";
     private String[] createEntries = new String[3];
     private String[] deleteEntries = new String[3];
+    private static DBHelper instance = null;
 
-    public DBHelper(Context context) {
+    public static DBHelper getInstance(Context context)
+    {
+        if(instance == null){
+            instance = new DBHelper(context);
+        }
+
+        return instance;
+    }
+
+    private DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         createEntries[0] = SchoolContract.SQL_CREATE_ENTRIES;
         createEntries[1] = ClassContract.SQL_CREATE_ENTRIES;

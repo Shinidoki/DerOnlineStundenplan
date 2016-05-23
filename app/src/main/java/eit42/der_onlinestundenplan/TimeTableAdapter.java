@@ -33,9 +33,16 @@ public class TimeTableAdapter extends ArrayAdapter<TimeTableElement> {
         TextView subjectText = (TextView) itemView.findViewById(R.id.classTextView);
         TextView rtText = (TextView) itemView.findViewById(R.id.rtTextView);
 
-        hourText.setText(element.getHour());
-        subjectText.setText(element.getSubject());
-        rtText.setText(element.getRoom() + " | " + element.getTeacher());
+        if(element != null){
+            hourText.setText(element.getHour());
+            subjectText.setText(element.getSubject());
+            rtText.setText(element.getRoom() + " | " + element.getTeacher());
+        } else {
+            hourText.setText("-");
+            subjectText.setText("-");
+            rtText.setText("- | -");
+        }
+
 
         return itemView;
     }
