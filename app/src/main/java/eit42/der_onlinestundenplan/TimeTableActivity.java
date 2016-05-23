@@ -79,8 +79,7 @@ public class TimeTableActivity extends AppCompatActivity {
         final String school = "RvWBK";
         final String sClass = "EIT42";
         Calendar cal = new GregorianCalendar();
-        // -1 bei der aktuellen Kalenderwoche da die API sonst die nächste Woche zurückliefert
-        currentWeek = cal.get(GregorianCalendar.WEEK_OF_YEAR) - 1;
+        currentWeek = cal.get(GregorianCalendar.WEEK_OF_YEAR);
 
         new TimeAsyncTask().execute(school,sClass);
 
@@ -169,10 +168,10 @@ public class TimeTableActivity extends AppCompatActivity {
             loadCurrentPrefs();
             updateSubtitleText();
 
-            //TODO Neue Stundenplandaten laden und ersetzen
-
+            new TimeAsyncTask().execute(currentSchool,currentClass);
             Toast.makeText(this,"Stundenplan wird aktualisiert",Toast.LENGTH_SHORT).show();
             Toast.makeText(this,currentClass + ";" + currentSchool,Toast.LENGTH_SHORT).show();
+
 
             return true;
         }
