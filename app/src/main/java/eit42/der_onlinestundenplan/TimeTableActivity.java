@@ -42,7 +42,6 @@ public class TimeTableActivity extends AppCompatActivity {
     private ImageButton nextWeekButton;
     private TextView weekTextView;
     private ImageButton nextWeekBtn, lastWeekBtn;
-    private int weekCounter = 0;
     private int currentWeek;
     private Fragment timeTableFragment;
 
@@ -81,35 +80,15 @@ public class TimeTableActivity extends AppCompatActivity {
         updateSubtitleText();
         setSupportActionBar(topToolbar);
         topToolbar.inflateMenu(R.menu.menu_time_table);
+        mTimeTableFragmentAdapter = new TimeTableFragmentAdapter(getSupportFragmentManager());
 
 
         ImageButton lastWeekButton = (ImageButton) bottomToolbar.findViewById(R.id.lastWeekButton);
         ImageButton nextWeekButton = (ImageButton) bottomToolbar.findViewById(R.id.nextWeekButton);
         final TextView weekText = (TextView) bottomToolbar.findViewById(R.id.weekTextView);
 
-        weekText.setText("Woche "+weekCounter);
+        weekText.setText("Woche " + weekCounter);
 
-        lastWeekButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                weekCounter--;
-                weekText.setText("Woche "+weekCounter);
-            }
-        });
-
-        nextWeekButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                weekCounter++;
-                weekText.setText("Woche "+weekCounter);
-            }
-        });
-
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mTimeTableFragmentAdapter = new TimeTableFragmentAdapter(getSupportFragmentManager());
-        mTimeTableFragmentAdapter.setFragments(this);
 
         final String school = "RvWBK";
         final String sClass = "EIT42";
@@ -125,7 +104,8 @@ public class TimeTableActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(weekCounter < 3)
                     weekCounter++;
-                new TimeAsyncTask().execute(school,sClass);
+                new TimeAsyncTask().execute(school, sClass);
+                weekText.setText("Woche "+ weekCounter);
             }
         });
 
@@ -135,11 +115,8 @@ public class TimeTableActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(weekCounter > -3)
                     weekCounter--;
-                JSONObject timeTable = api.getClassInfo(school, sClass, currentWeek+weekCounter);
-                Bundle bundle = new Bundle();
-                bundle.putString("timeTable", timeTable.toString());
-                TimeTableFragment fragInfo = new TimeTableFragment();
-                fragInfo.setArguments(bundle);
+                new TimeAsyncTask().execute(school,sClass);
+                weekText.setText("Woche "+ weekCounter);
             }
         });
         // Set up the ViewPager with the sections adapter.
@@ -152,8 +129,7 @@ public class TimeTableActivity extends AppCompatActivity {
 
     public void updateSubtitleText()
     {
-        if(toolbarSubtitle == null)
-        {
+        if(toolbarSubtitle == null) {
             toolbarSubtitle = (TextView) topToolbar.findViewById(R.id.toolbar_subtitle);
         }
         if(currentClass != "" && currentSchool != "")
@@ -231,11 +207,12 @@ public class TimeTableActivity extends AppCompatActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(JSONObject result) {
-            mSectionsPagerAdapter = new TimeTableFragmentAdapter(getSupportFragmentManager());
-            mSectionsPagerAdapter.setFragments(result);
+            mTimeTableFragmentAdapter.setFragments(result);
+
             // Set up the ViewPager with the sections adapter.
-            mViewPager = (ViewPager) findViewById(R.id.container);
-            mViewPager.setAdapter(mSectionsPagerAdapter);
+//            mViewPager = (ViewPager) findViewById(R.id.container);
+//            mViewPager.setAdapter(mTimeTableFragmentAdapter);
+
         }
     }
 }

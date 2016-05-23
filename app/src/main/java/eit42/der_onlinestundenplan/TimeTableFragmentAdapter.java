@@ -22,11 +22,13 @@ public class TimeTableFragmentAdapter extends FragmentPagerAdapter {
     TimeTableFragment wednesdayFragment;
     TimeTableFragment thursdayFragment;
     TimeTableFragment fridayFragment;
+    FragmentManager fragmentManager;
 
 
     public TimeTableFragmentAdapter(FragmentManager fm)
     {
         super(fm);
+        fragmentManager = fm;
     }
 
     public void setFragments(JSONObject timeTable)
@@ -80,6 +82,12 @@ public class TimeTableFragmentAdapter extends FragmentPagerAdapter {
         mondayFragment.setDayText("Montag");
         tuesdayFragment.setElements(weekDays.get(1));
         tuesdayFragment.setDayText("Dienstag");
+        wednesdayFragment.setElements(weekDays.get(2));
+        wednesdayFragment.setDayText("Mittwoch");
+        thursdayFragment.setElements(weekDays.get(3));
+        thursdayFragment.setDayText("Donnerstag");
+        fridayFragment.setElements(weekDays.get(4));
+        fridayFragment.setDayText("Freitag");
 
     }
 
@@ -96,12 +104,28 @@ public class TimeTableFragmentAdapter extends FragmentPagerAdapter {
             case 1:
                 frag = tuesdayFragment;
                 break;
+            case 2:
+                frag = wednesdayFragment;
+                break;
+            case 3:
+                frag = thursdayFragment;
+                break;
+            case 4:
+                frag = fridayFragment;
+                break;
+
         }
         return frag;
     }
 
+    public void update()
+    {
+
+    }
+
+
     @Override
     public int getCount() {
-        return 2;
+        return 5;
     }
 }
