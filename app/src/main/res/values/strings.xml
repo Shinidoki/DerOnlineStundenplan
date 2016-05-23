@@ -1,12 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Der Onlinestundenplan</string>
-    <string-array name="schools">
+    <string name="app_name">Onlinestundenplan</string>
+
+    <string name="action_settings">Settings</string>
+
+    //Titles
+    <string name="title_activity_time_table">Stundenplan</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="toolbar_title">Onlinestundenplan</string>
+    <string name="toolbar_subtitle">RvWBK | EIT42</string>
+
+    //Defaults
+    <string name="default_week_text">-Woche-</string>
+
+    //Error/Warning messages
+    <string name="no_school_error_message">Keine Schule gewählt</string>
+    <string name="no_class_error_message">Keine Klasse gewählt</string>
+
+    //Preferences
+    <string name="shared_preference_base_key">com.stundenplan.app</string>
+    <string name="shared_preference_toolbar_key">com.stundenplan.app.toolbar</string>
+    
+        //School
+    <string name="preference_schoollist_title">Schule</string>
+    <string name="preference_schoollist_key">schoollist</string>
+    <string name="preference_schoollist_default">RvWBK</string>
+
+        //Class
+    <string name="preference_classlist_title">Klasse</string>
+    <string name="preference_classlist_key">classlist</string>
+    <string name="preference_classlist_default">EIT42</string>
+
+    <string-array name="klassen">
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+    </string-array>
+    <string-array name="klassen_values">
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+        <item>EIT 41</item>
+        <item>EIT 42</item>
+        <item>EIT 43</item>
+        <item>EIT 50</item>
+        <item>EIT 51</item>
+        <item>EIT 52</item>
+    </string-array>
+
+
+    <string-array name="schulen">
+        <item>RvWBK</item>
+        <item>HWBK</item>
+        <item>LEBK</item>
+    </string-array>
+    <string-array name="schulen_values">
         <item>Richard</item>
         <item>Helene</item>
         <item>Ludwig</item>
     </string-array>
-    <string name="title_activity_time_table">TimeTable</string>
-    <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="pref_header_general">Stundenplan</string>
 </resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <PreferenceCategory
+        android:title="Stundenplan"
+        android:key="pref_key_timetable_settings">
+        <ListPreference
+            android:title="@string/preference_schoollist_title"
+            android:key="@string/preference_schoollist_key"
+            android:defaultValue="@string/preference_schoollist_default"
+            android:entries="@array/schulen"
+            android:entryValues="@array/schulen_values"
+            android:dialogLayout="@android:layout/simple_list_item_1"/>
+        <ListPreference
+            android:title="@string/preference_classlist_title"
+            android:key="@string/preference_classlist_key"
+            android:defaultValue="@string/preference_classlist_default"
+            android:entries="@array/klassen"
+            android:entryValues="@array/klassen_values"
+            android:dialogLayout="@android:layout/simple_list_item_1"/>
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>
