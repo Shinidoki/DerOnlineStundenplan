@@ -26,6 +26,7 @@ import java.util.GregorianCalendar;
 
 public class StundenPlanApi {
     private static final String url = "http://beta.der-onlinestundenplan.de/api/v1/school";
+    private static final String userAgent = "OnlineStundenplan/Android_App_v1.0";
 
     private JSONArray schools = null;
     private JSONObject classes = null;
@@ -555,6 +556,7 @@ public class StundenPlanApi {
             // create Http Connection
             URL urlObj = new URL(url + type);
             HttpURLConnection urlConnection = (HttpURLConnection) urlObj.openConnection();
+            urlConnection.setRequestProperty("User-Agent",userAgent);
             try {
                 inputStream = new BufferedInputStream(urlConnection.getInputStream());
 
