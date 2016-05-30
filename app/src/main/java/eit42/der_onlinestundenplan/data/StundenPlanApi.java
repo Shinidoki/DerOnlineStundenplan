@@ -3,6 +3,7 @@ package eit42.der_onlinestundenplan.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.ConnectivityManager;
@@ -51,12 +52,85 @@ public class StundenPlanApi {
             JSONObject json = new JSONObject(apiResult);
             result = json.getJSONArray("schools");
         } catch (Exception e) {
-            Log.d("API/JSON Schools","Json error: " + e.getMessage());
+            Log.d("API/JSON Schools", "Json error: " + e.getMessage());
             return null;
         }
         schools = result;
         saveSchools(result);
         return result;
+    }
+
+    private boolean schoolExists(String schoolName)
+    {
+        DBHelper dbHelper = DBHelper.getInstance(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME
+        };
+
+        String sortOrder = SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME + " ASC";
+        String where = SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME + " = \"" + schoolName + "\" ";
+
+        int count;
+        Cursor c = null;
+
+        try {
+            c = db.query(
+                    SchoolContract.SchoolEntry.TABLE_NAME,
+                    projection,
+                    where, null, null, null,
+                    sortOrder
+            );
+
+            count = c.getCount();
+
+        } catch (SQLiteException e) {
+            Log.d("SQL", "Fehler beim query der Schulen: " + e.getLocalizedMessage());
+            count = 0;
+            if (c != null) {
+                c.close();
+            }
+        }
+
+        return count != 0;
+    }
+
+    private boolean classExists(String schoolName, String className)
+    {
+        DBHelper dbHelper = DBHelper.getInstance(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                ClassContract.ClassEntry.COLUMN_NAME_C_NAME
+        };
+
+        String sortOrder = ClassContract.ClassEntry.COLUMN_NAME_C_NAME + " ASC";
+        String where = ClassContract.ClassEntry.COLUMN_NAME_C_NAME + " = \"" + className + "\" " +
+                        "AND "+ ClassContract.ClassEntry.COLUMN_NAME_C_SCHOOL + " = \"" + schoolName + "\" ";
+
+        int count;
+        Cursor c = null;
+
+        try {
+            c = db.query(
+                    ClassContract.ClassEntry.TABLE_NAME,
+                    projection,
+                    where, null, null, null,
+                    sortOrder
+            );
+
+            count = c.getCount();
+
+        } catch (SQLiteException e) {
+            Log.d("SQL", "Fehler beim query der Schulen: " + e.getLocalizedMessage());
+            count = 0;
+            if (c != null) {
+                c.close();
+            }
+        }
+
+        return count != 0;
     }
 
     /**
@@ -71,15 +145,18 @@ public class StundenPlanApi {
         for (int i = 0; i < len; i++) {
             try {
                 JSONObject school = schools.getJSONObject(i);
-                ContentValues values = new ContentValues();
-                values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME, school.getString("name"));
-                values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_CITY, school.getString("city"));
-                values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_WEBSITE, school.getString("website"));
-                db.insert(
-                        SchoolContract.SchoolEntry.TABLE_NAME,
-                        null,
-                        values
-                );
+                if(!schoolExists(school.getString("name"))){
+                    ContentValues values = new ContentValues();
+                    values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_NAME, school.getString("name"));
+                    values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_CITY, school.getString("city"));
+                    values.put(SchoolContract.SchoolEntry.COLUMN_NAME_S_WEBSITE, school.getString("website"));
+
+                    db.insert(
+                            SchoolContract.SchoolEntry.TABLE_NAME,
+                            null,
+                            values
+                    );
+                }
             } catch (Exception e) {
                 Log.d("SQL/API School", "Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
             }
@@ -115,16 +192,16 @@ public class StundenPlanApi {
 
             count = c.getCount();
 
-        } catch(SQLiteException e){
+        } catch (SQLiteException e) {
             Log.d("SQL", "Fehler beim query der Schulen: " + e.getLocalizedMessage());
             count = 0;
-            if(c != null){
+            if (c != null) {
                 c.close();
             }
         }
 
         if (count == 0) {
-            if(c != null){
+            if (c != null) {
                 c.close();
             }
             JSONArray schoolArray = getSchools();
@@ -135,7 +212,7 @@ public class StundenPlanApi {
                 try {
                     result[i] = schoolArray.getJSONObject(i).getString("name");
                 } catch (Exception e) {
-                    Log.d("API School","Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
+                    Log.d("API School", "Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
                 }
             }
             return result;
@@ -164,7 +241,7 @@ public class StundenPlanApi {
         try {
             result = new JSONObject(apiResult);
         } catch (Exception e) {
-            Log.d("API/SchoolInfo","Json error: " + e.getMessage());
+            Log.d("API/SchoolInfo", "Json error: " + e.getMessage());
             return null;
         }
         return result;
@@ -184,7 +261,7 @@ public class StundenPlanApi {
             try {
                 return classes.getJSONArray(school);
             } catch (Exception e) {
-                Log.d("API/Classes","Fehler beim holen der Klassen: " + e.getMessage());
+                Log.d("API/Classes", "Fehler beim holen der Klassen: " + e.getMessage());
                 return null;
             }
         }
@@ -201,7 +278,7 @@ public class StundenPlanApi {
             classes.put(school, arrayResult);
 
         } catch (Exception e) {
-            Log.d("API/Classes","Json error: " + e.getMessage());
+            Log.d("API/Classes", "Json error: " + e.getMessage());
             return null;
         }
         saveClasses(arrayResult, school);
@@ -212,7 +289,7 @@ public class StundenPlanApi {
      * Save the classes in the database
      *
      * @param classes which schould be saved
-     * @param school to which the class belongs
+     * @param school  to which the class belongs
      */
     private void saveClasses(JSONArray classes, String school) {
         int len = classes.length();
@@ -223,16 +300,18 @@ public class StundenPlanApi {
         for (int i = 0; i < len; i++) {
             try {
                 String sClass = classes.getString(i);
-                ContentValues values = new ContentValues();
-                values.put(ClassContract.ClassEntry.COLUMN_NAME_C_NAME, sClass);
-                values.put(ClassContract.ClassEntry.COLUMN_NAME_C_SCHOOL, school);
-                db.insert(
-                        ClassContract.ClassEntry.TABLE_NAME,
-                        null,
-                        values
-                );
+                if(!classExists(school,sClass)){
+                    ContentValues values = new ContentValues();
+                    values.put(ClassContract.ClassEntry.COLUMN_NAME_C_NAME, sClass);
+                    values.put(ClassContract.ClassEntry.COLUMN_NAME_C_SCHOOL, school);
+                    db.insert(
+                            ClassContract.ClassEntry.TABLE_NAME,
+                            null,
+                            values
+                    );
+                }
             } catch (Exception e) {
-                Log.d("API/Classes","Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
+                Log.d("API/Classes", "Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
             }
         }
         db.close();
@@ -264,19 +343,22 @@ public class StundenPlanApi {
             );
 
             count = c.getCount();
-        } catch(SQLiteException e){
+        } catch (SQLiteException e) {
             Log.d("SQL", "Fehler beim query der Klassen: " + e.getLocalizedMessage());
             count = 0;
-            if(c != null){
+            if (c != null) {
                 c.close();
             }
         }
 
         if (count == 0) {
-            if(c != null){
+            if (c != null) {
                 c.close();
             }
             JSONArray classArray = getClasses(school);
+            if(classArray == null){
+                return new String[0];
+            }
             int len = classArray.length();
             String[] result = new String[len];
 
@@ -284,7 +366,7 @@ public class StundenPlanApi {
                 try {
                     result[i] = classArray.getString(i);
                 } catch (Exception e) {
-                    Log.d("API/Schools","Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
+                    Log.d("API/Schools", "Fehler beim konvertieren der Schulen ins Array format: " + e.getMessage());
                 }
             }
             return result;
@@ -331,7 +413,7 @@ public class StundenPlanApi {
         };
 
         String sortOrder = TimeTableContract.TimeEntry.COLUMN_NAME_T_WEEK + " ASC";
-        String where = TimeTableContract.TimeEntry.COLUMN_NAME_T_SCHOOL + " = \""+ school + "\" " +
+        String where = TimeTableContract.TimeEntry.COLUMN_NAME_T_SCHOOL + " = \"" + school + "\" " +
                 "AND " + TimeTableContract.TimeEntry.COLUMN_NAME_T_CLASS + " = \"" + sClass + "\"" +
                 "AND " + TimeTableContract.TimeEntry.COLUMN_NAME_T_WEEK + " = " + week;
         int count;
@@ -346,10 +428,10 @@ public class StundenPlanApi {
             );
 
             count = c.getCount();
-        } catch(SQLiteException e){
+        } catch (SQLiteException e) {
             Log.d("SQL", "Fehler beim query des Stundenplans: " + e.getLocalizedMessage());
             count = 0;
-            if(c != null){
+            if (c != null) {
                 c.close();
             }
         }
@@ -359,7 +441,7 @@ public class StundenPlanApi {
                 c.close();
             }
             JSONObject timeTable = classApiCall("/" + school + "/class/" + sClass + "/fixedWeek/" + week);
-            if(timeTable != null){
+            if (timeTable != null) {
                 timeTable.remove("success");
                 saveTimeTable(sClass, school, week, timeTable);
             }
@@ -369,7 +451,7 @@ public class StundenPlanApi {
             c.moveToFirst();
             try {
                 return new JSONObject(c.getString(c.getColumnIndex(TimeTableContract.TimeEntry.COLUMN_NAME_T_DATA)));
-            } catch(Exception e){
+            } catch (Exception e) {
                 Log.d("SQL/API", "Fehler beim erstellen des Stundenplan JSON aus Datenbank");
                 return null;
             }
@@ -378,10 +460,11 @@ public class StundenPlanApi {
 
     /**
      * Save a time table for a class
+     *
      * @param sClass Class of the timetable
      * @param school School of the class
-     * @param week Calenderweek of the timetable
-     * @param data JSON data of the timetable
+     * @param week   Calenderweek of the timetable
+     * @param data   JSON data of the timetable
      */
     private void saveTimeTable(String sClass, String school, int week, JSONObject data) {
         DBHelper dbHelper = DBHelper.getInstance(context);
@@ -389,7 +472,7 @@ public class StundenPlanApi {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         try {
-            String where = TimeTableContract.TimeEntry.COLUMN_NAME_T_SCHOOL + " = \""+ school + "\" " +
+            String where = TimeTableContract.TimeEntry.COLUMN_NAME_T_SCHOOL + " = \"" + school + "\" " +
                     "AND " + TimeTableContract.TimeEntry.COLUMN_NAME_T_CLASS + " = \"" + sClass + "\"" +
                     "AND " + TimeTableContract.TimeEntry.COLUMN_NAME_T_WEEK + " = " + week;
             db.delete(
@@ -409,7 +492,7 @@ public class StundenPlanApi {
                     values
             );
         } catch (Exception e) {
-            Log.d("API/Schools","Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
+            Log.d("API/Schools", "Fehler beim speichern der Schule in der Datenbank: " + e.getMessage());
         }
 
         db.close();
@@ -430,7 +513,7 @@ public class StundenPlanApi {
             JSONObject json = new JSONObject(apiResult);
             result = json.getJSONArray("schools");
         } catch (Exception e) {
-            Log.d("API/AvailableWeeks","Json error: " + e.getMessage());
+            Log.d("API/AvailableWeeks", "Json error: " + e.getMessage());
             return null;
         }
         schools = result;
@@ -448,8 +531,8 @@ public class StundenPlanApi {
         JSONObject result;
         try {
             result = new JSONObject(apiResult);
-            if(!result.getString("success").equals("true")){
-                Log.d("APIResult", "Got no success from API: "+ apiResult);
+            if (!result.getString("success").equals("true")) {
+                Log.d("APIResult", "Got no success from API: " + apiResult);
                 return null;
             }
         } catch (Exception e) {
@@ -482,7 +565,7 @@ public class StundenPlanApi {
                 urlConnection.disconnect();
             }
         } catch (Exception e) {
-            //Log.d("InputStream", e.getLocalizedMessage(),e);
+            Log.d("InputStream", e.getLocalizedMessage(),e);
         }
 
         return result;
@@ -509,6 +592,7 @@ public class StundenPlanApi {
 
     /**
      * Checks if there is a network connection
+     *
      * @return true if there is a network connection
      */
     private boolean isOnline() {

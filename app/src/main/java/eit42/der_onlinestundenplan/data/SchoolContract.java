@@ -23,7 +23,7 @@ public final class SchoolContract {
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE IF NOT EXISTS " + SchoolEntry.TABLE_NAME + " (" +
                     SchoolEntry._ID + " INTEGER PRIMARY KEY," +
-                    SchoolEntry.COLUMN_NAME_S_NAME + TEXT_TYPE + COMMA_SEP +
+                    SchoolEntry.COLUMN_NAME_S_NAME + TEXT_TYPE + " UNIQUE " + COMMA_SEP +
                     SchoolEntry.COLUMN_NAME_S_CITY + TEXT_TYPE + COMMA_SEP +
                     SchoolEntry.COLUMN_NAME_S_WEBSITE + TEXT_TYPE +
             " )";

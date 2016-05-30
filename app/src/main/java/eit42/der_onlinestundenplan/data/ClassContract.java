@@ -21,7 +21,8 @@ public final class ClassContract {
             "CREATE TABLE IF NOT EXISTS " + ClassEntry.TABLE_NAME + " (" +
                     ClassEntry._ID + " INTEGER PRIMARY KEY," +
                     ClassEntry.COLUMN_NAME_C_NAME + TEXT_TYPE + COMMA_SEP +
-                    ClassEntry.COLUMN_NAME_C_SCHOOL + TEXT_TYPE +
+                    ClassEntry.COLUMN_NAME_C_SCHOOL + TEXT_TYPE + COMMA_SEP +
+                    " CONSTRAINT uc_nameSchool UNIQUE ("+ClassEntry.COLUMN_NAME_C_NAME + COMMA_SEP + ClassEntry.COLUMN_NAME_C_SCHOOL+") "+
                     " )";
 
     public static final String SQL_DELETE_ENTRIES =
